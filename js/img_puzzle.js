@@ -2,7 +2,7 @@ function getRandom(min, max) {
 	return Math.random() * (max - min) + min;
 }
 
-function get_img_puzzle(images, shuffle_int = 50) {
+function get_img_puzzle(images, shuffle_delay = 3000, shuffle_int = 50) {
 	
 	let img = new Image();
 	
@@ -196,15 +196,11 @@ function get_img_puzzle(images, shuffle_int = 50) {
 		}
 		
 		function win() {
+			// IT IS A WIN
+			alert("you win");
 			for(let i = 0; i < element.length; i++ ) {
-				element[i].classList.add("win_anim");
 				element[i].style.boxShadow = "inset 0px 0px 0px #ccc";
 			}
-			setTimeout(function () {
-				document.getElementById("before_win").style.display = "none";
-				document.getElementById("after_win").style.display = "block";
-				document.querySelector(".overlay-shuffle").classList.add("active");
-			}, 2200);
 		}
 		
 		function shuffle() {
@@ -221,24 +217,13 @@ function get_img_puzzle(images, shuffle_int = 50) {
 						element[i].style.boxShadow = "inset 1px 1px 3px #ccc";
 					}
 					draggable_elements(element); // Enabling draggable
-					document.querySelector(".overlay-shuffle").classList.remove("active");
 				}
 			}
 		}
 		
-		// setting the help image
-		document.querySelector(".help_menu img").setAttribute("src", img.src);
-		
-		
-		setTimeout(function() {
-			document.getElementById("before_win").style.display = "block";
-			document.getElementById("after_win").style.display = "none";
-			document.querySelector(".overlay-shuffle").classList.add("active");
-		},2500);
-		
 		setTimeout(function() {
 			shuffle();
-		},3000);
+		},shuffle_delay);
 	}
 	let random_img = Math.floor(getRandom(0,images.length-1));
 	img.src = images[random_img];
@@ -295,27 +280,3 @@ function swipeIt(e) {
 	this.style.left = initX+contact[0].pageX-firstX + 'px';
 	this.style.top = initY+contact[0].pageY-firstY + 'px';
 }
-
-// settig the UI
-document.addEventListener('DOMContentLoaded', function() {
-
-	let other_img = document.querySelectorAll(".other_img");
-	for(let i = 0; i < other_img.length; i++) {
-		other_img[i].addEventListener("click", function() {
-			let elements = document.querySelectorAll(".bg-elem");
-			for(let i = 0; i < elements.length; i++) {
-				elements[i].style.boxShadow = "inset 0px 0px 0px #ccc";
-			}
-			let ui_elements = document.querySelectorAll(".overlay-shuffle, .help_menu, #menu_opener");
-			for(let i = 0; i < ui_elements.length; i++) {
-				ui_elements[i].classList.remove("active");
-			}
-			get_img_puzzle(images);
-		});
-	}
-	
-	document.getElementById("menu_opener").addEventListener("click", function() {
-		document.querySelector(".help_menu").classList.toggle("active");
-		document.getElementById("menu_opener").classList.toggle("active");
-	});
-});

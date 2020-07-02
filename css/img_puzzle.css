@@ -1,1 +1,17 @@
-html,body{height:100%;font-size:0px;margin:0;background-color:white;overscroll-behavior-y:contain}*{outline:0 !important}.PlayGround{position:relative;overflow:hidden}.bg-elem{position:absolute;margin:0;padding:0;z-index:1;transition:box-shadow 0.4s}#menu_opener{position:fixed;top:-10px;left:-11px;border:none;font-size:40px;background-color:#33b5e5;border-radius:50%;padding:14px;font-weight:900;z-index:999}#menu_opener span{position:relative;display:block;width:25px;height:2px;border-bottom:3px solid black;margin-top:3px;transition:transform 0.2s, top 0.2s, left 0.2s, opacity 0.2s}#menu_opener.active span:first-child{transform:rotate(-45deg);top:10px}#menu_opener.active span:nth-child(2){opacity:0}#menu_opener.active span:last-child{transform:rotate(45deg);top:-6px;left:1px}.overlay-shuffle{text-align:center;position:fixed;width:100%;height:100%;top:-200%;left:0px;background-color:rgba(0,0,0,0.7);transition:top 0.3s;z-index:999}.overlay-shuffle.active{top:0%}.overlay-shuffle h1{color:#fff;text-shadow:1px 1px 20px #eee;font-size:10vw;font-weight:700;margin-top:10%}.overlay-shuffle button{position:relative;color:#fff;border:none;text-shadow:1px 1px 20px #eee;background-color:transparent;font-size:25px;width:190px;left:50%;margin-left:-90px;display:block;cursor:pointer;z-index:999}.overlay-shuffle #after_win,.overlay-shuffle #before_win{display:none}.help_menu{text-align:center;position:fixed;width:100%;height:100%;top:-200%;left:0px;background-color:rgba(0,0,0,0.7);transition:top 0.3s;z-index:888}.help_menu.active{top:0%}.help_menu img{position:relative;left:50%;top:10%;max-width:300px;margin-left:-150px;height:auto;display:block}.help_menu button{position:relative;color:#fff;border:none;text-shadow:1px 1px 20px #eee;background-color:transparent;font-size:25px;width:190px;left:50%;margin-left:-90px;display:block;cursor:pointer;z-index:999;top:20%}.win_anim{animation:bravo 1.5s ease 1;box-shadow:inset 0px 0px 0px rgba(0,0,0,0)}@keyframes bravo{from{box-shadow:inset 1px 1px 3px #ccc}50%{box-shadow:inset 2px 2px 50px #ccc}to{box-shadow:inset 0px 0px 0px rgba(0,0,0,0)}}
+html,body {
+	margin: 0;
+	overscroll-behavior-y: contain; /* DISABLE PULL TO REFRESH */
+}
+/* Main holder element */
+.PlayGround {
+	position: relative;
+	overflow: hidden;
+}
+/* one elem */
+.bg-elem {
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	z-index: 1;
+	transition: box-shadow 0.4s;
+}
