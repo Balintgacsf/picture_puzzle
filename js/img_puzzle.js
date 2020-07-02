@@ -244,47 +244,61 @@ function get_img_puzzle(images, shuffle_int = 50) {
 	img.src = images[random_img];
 }
 
+// Draggable
+let initX, initY, firstX, firstY;
+function draggable_elements(object) {
+	for(let i = 0; i < object.length; i++) {
+		object[i].addEventListener('mousedown', function(e) {
+	
+		e.preventDefault();
+		initX = this.offsetLeft;
+		initY = this.offsetTop;
+		firstX = e.pageX;
+		firstY = e.pageY;
+	
+		this.addEventListener('mousemove', dragIt, false);
+	
+		document.querySelector(".PlayGround").addEventListener('mouseup', function() {
+			object[i].removeEventListener('mousemove', dragIt, false);
+		}, false);
+	
+		}, false);
+		
+		object[i].addEventListener('touchstart', function(e) {
+	
+		e.preventDefault();
+		initX = this.offsetLeft;
+		initY = this.offsetTop;
+		let touch = e.touches;
+		firstX = touch[0].pageX;
+		firstY = touch[0].pageY;
+	
+		this.addEventListener('touchmove', swipeIt, false);
+	
+		document.querySelector(".PlayGround").addEventListener('touchend', function(e) {
+			e.preventDefault();
+			object[i].removeEventListener('touchmove', swipeIt, false);
+		}, false);
+	
+		}, false);
+	
+	}
+}
+
+function dragIt(e) {
+	this.style.left = initX+e.pageX-firstX + 'px';
+	this.style.top = initY+e.pageY-firstY + 'px';
+}
+
+function swipeIt(e) {
+	var contact = e.touches;
+	this.style.left = initX+contact[0].pageX-firstX + 'px';
+	this.style.top = initY+contact[0].pageY-firstY + 'px';
+}
+
 // settig the UI
 document.addEventListener('DOMContentLoaded', function() {
-	
-	let images = [
-		"https://i.ibb.co/VBNcJBr/hatter7.jpg",
-		"https://i.ibb.co/dL0rjZb/hatter5.jpg",
-		"https://i.ibb.co/1MkR9LN/hatter4.jpg",
-		"https://i.ibb.co/mhhKxP5/hatter3.jpg",
-		"https://i.ibb.co/tzX7Vs7/hatter2.jpg",
-		"https://i.ibb.co/2tVWW8H/hatter1.jpg",
-		"https://i.ibb.co/bXPYc01/hatter0.jpg",
-		"https://i.ibb.co/h8J5kxx/hatter31.jpg",
-		"https://i.ibb.co/pzH5pQ3/hatter30.jpg",
-		"https://i.ibb.co/1T6DfjM/hatter29.jpg",
-		"https://i.ibb.co/w4yK5Mg/hatter28.jpg",
-		"https://i.ibb.co/Gsbcp1M/hatter27.jpg",
-		"https://i.ibb.co/vJswWb0/hatter26.jpg",
-		"https://i.ibb.co/7C3RJyD/hatter25.jpg",
-		"https://i.ibb.co/mDkP1CF/hatter24.jpg",
-		"https://i.ibb.co/8c1sNGT/hatter23.jpg",
-		"https://i.ibb.co/QFCr5Mx/hatter22.jpg",
-		"https://i.ibb.co/TM17Xfm/hatter21.jpg",
-		"https://i.ibb.co/3ctv3W0/hatter20.jpg",
-		"https://i.ibb.co/H7tgt5G/hatter19.jpg",
-		"https://i.ibb.co/XL7z36X/hatter18.jpg",
-		"https://i.ibb.co/3TBJ5wc/hatter17.jpg",
-		"https://i.ibb.co/wdH804D/hatter16.jpg",
-		"https://i.ibb.co/gMgMWbW/hatter15.jpg",
-		"https://i.ibb.co/FwT8VVt/hatter14.jpg",
-		"https://i.ibb.co/vBPN3zW/hatter13.jpg",
-		"https://i.ibb.co/4fWJSH5/hatter12.jpg",
-		"https://i.ibb.co/x8m34S8/hatter11.jpg",
-		"https://i.ibb.co/6YS6Kbh/hatter10.jpg",
-		"https://i.ibb.co/ChFkhhz/hatter9.jpg",
-		"https://i.ibb.co/Jkxjbrt/hatter8.jpg",
-		"https://i.ibb.co/cTDp6mh/hatter6.jpg"
-	];
-	
-	get_img_puzzle(images);
-	
-	
+
 	let other_img = document.querySelectorAll(".other_img");
 	for(let i = 0; i < other_img.length; i++) {
 		other_img[i].addEventListener("click", function() {
