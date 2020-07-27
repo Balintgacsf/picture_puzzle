@@ -19,14 +19,14 @@ In the body just add one div with class ``` PlayGround ```
 ```
 ### Javascript
 
-Create an array and pass it to the function. The function will select random image from the array each time you call the function.
+Create an array with the path of the images you want to shuffle and pass it to the function. The function will select random image from the array each time you call the function.
 
 ```javascript
 let images = [
-    "https://i.ibb.co/VBNcJBr/hatter7.jpg",
-    "https://i.ibb.co/dL0rjZb/hatter5.jpg",
-    "https://i.ibb.co/1MkR9LN/hatter4.jpg",
-    "https://i.ibb.co/mhhKxP5/hatter3.jpg",
+    "https://path/to/image7.jpg",
+    "https://path/to/image5.jpg",
+    "https://path/to/image4.jpg",
+    "https://path/to/image3.jpg",
 ];
 	
 get_img_puzzle(images);
