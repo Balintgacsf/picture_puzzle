@@ -2,11 +2,6 @@ html,body {
 	margin: 0;
 	overscroll-behavior-y: contain; /* DISABLE PULL TO REFRESH */
 }
-/* Main holder element */
-.PlayGround {
-	position: relative;
-	overflow: hidden;
-}
 /* one elem */
 .bg-elem {
 	position: absolute;

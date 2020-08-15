@@ -2,6 +2,9 @@ function get_img_puzzle(images, div_holder, difficulty = "regular", shuffle_dela
 	
 	let img = new Image();
 	let check_playable = false;
+
+	document.querySelector(div_holder).style.position = "relative";
+	document.querySelector(div_holder).style.overflow = "hidden";
 	
 	img.onload = function() {
 		let original_sequence = "", sequence = "";
