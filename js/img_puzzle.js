@@ -80,7 +80,7 @@ function get_img_puzzle(settings) {
 			original_sequence = original_sequence + elem_data;
 		}
 		
-		// setting bg and elements height and width
+		// setting background and setting elements height and width
 		for(let i = 0; i < element.length; i++) {
 			element[i].style.backgroundImage = "url('"+img.src+"')";
 			element[i].style.backgroundSize = new_width+'px '+new_height+'px';
@@ -93,9 +93,10 @@ function get_img_puzzle(settings) {
 			}
 		}
 		
-		//setting elemnts position and bg position
+		//setting elemnts positions and background positions
 		let piece = 0;
 		for (let i = 0; i < element.length; i++) {
+			// REGULAR
 			if(difficulty === "regular") {
 				element[i].style.left = new_width/7*piece+'px';
 				// fisrt row
@@ -111,6 +112,7 @@ function get_img_puzzle(settings) {
 				let topPos = element[i].offsetTop;
 				element[i].style.backgroundPosition = -leftPos+'px '+ -topPos+'px';
 			}
+			// HARD
 			if(difficulty === "hard") {
 				element[i].style.left = new_width/7*piece+'px';
 				// fisrt row
@@ -270,7 +272,7 @@ function get_img_puzzle(settings) {
 			win_function();
 		}
 		
-		// shuffleing the elemnts
+		// mixing the elemnts
 		function shuffle() {
 			let random_elem = document.querySelectorAll(".bg-elem");
 			for(let i = 0; i <= shuffle_int; i++) {
