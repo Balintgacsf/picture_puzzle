@@ -1,4 +1,25 @@
-function get_img_puzzle(images, div_holder, difficulty = "regular", shuffle_delay = 3000, shuffle_int = 50) {
+function get_img_puzzle(settings) {
+
+	// accepting settings
+	let images = settings.image;
+	let div_holder = settings.holder_div;
+	let win_function = settings.after_win;
+	let difficulty = settings.difficulty || "regular";
+	let shuffle_delay = settings.shuffle_delay || 3000;
+	let shuffle_int = settings.shuffle_integer || 50;
+
+	try{
+		if(typeof images !== "string" && (!Array.isArray(images))) throw "images must be a string or an array";
+		if(typeof div_holder !== "string") throw "div_holder is not a string";
+		if(typeof win_function !== "function") throw "win_function is not a function";
+		if(typeof shuffle_delay !== "number") throw "shuffle_delay is not a number";
+		if(typeof shuffle_int !== "number") throw "shuffle_integer is not a number"
+		if(typeof difficulty !== "string") throw "difficulty is not a string";
+		if(difficulty !== "regular" && difficulty !== "hard") throw "difficulty can be regular or hard";
+	}
+	catch(err) {
+		console.log(err);
+	}
 	
 	let img = new Image();
 	let check_playable = false;
@@ -246,11 +267,7 @@ function get_img_puzzle(images, div_holder, difficulty = "regular", shuffle_dela
 		}
 		
 		function win() {
-			// IT IS A WIN
-			alert("you win");
-			for(let i = 0; i < element.length; i++ ) {
-				element[i].style.boxShadow = "inset 0px 0px 0px #ccc";
-			}
+			win_function();
 		}
 		
 		// shuffleing the elemnts
@@ -302,67 +319,67 @@ function get_img_puzzle(images, div_holder, difficulty = "regular", shuffle_dela
 		return Math.random() * (max - min) + min;
 	}
 	
-// Draggable
-let initX, initY, firstX, firstY;
-function draggable_elements(drg_elem) {
-	if(check_playable === false) {
-		return;
-	}
-	for(let i = 0; i < drg_elem.length; i++) {
-		drg_elem[i].addEventListener('mousedown', function(e) {
-			
-			e.preventDefault();
-			if(check_playable === false) {
-				return;
-			}
-			initX = this.offsetLeft;
-			initY = this.offsetTop;
-			firstX = e.pageX;
-			firstY = e.pageY;
-			
-			this.addEventListener('mousemove', dragIt);
-			this.addEventListener('mouseleave', function() {
-				this.removeEventListener('mousemove', dragIt);
-			});
-			
-			document.querySelector(div_holder).addEventListener('mouseup', function() {
-				drg_elem[i].removeEventListener('mousemove', dragIt);
-			});
-
-		});
-		
-		drg_elem[i].addEventListener('touchstart', function(e) {
-			
-			e.preventDefault();
-			if(check_playable === false) {
-				return;
-			}
-			initX = this.offsetLeft;
-			initY = this.offsetTop;
-			let touch = e.touches;
-			firstX = touch[0].pageX;
-			firstY = touch[0].pageY;
-			
-			this.addEventListener('touchmove', swipeIt);
-			
-			document.querySelector(div_holder).addEventListener('touchend', function(e) {
+	// Draggable
+	let initX, initY, firstX, firstY;
+	function draggable_elements(drg_elem) {
+		if(check_playable === false) {
+			return;
+		}
+		for(let i = 0; i < drg_elem.length; i++) {
+			drg_elem[i].addEventListener('mousedown', function(e) {
+				
 				e.preventDefault();
-				drg_elem[i].removeEventListener('touchmove', swipeIt);
+				if(check_playable === false) {
+					return;
+				}
+				initX = this.offsetLeft;
+				initY = this.offsetTop;
+				firstX = e.pageX;
+				firstY = e.pageY;
+				
+				this.addEventListener('mousemove', dragIt);
+				this.addEventListener('mouseleave', function() {
+					this.removeEventListener('mousemove', dragIt);
+				});
+				
+				document.querySelector(div_holder).addEventListener('mouseup', function() {
+					drg_elem[i].removeEventListener('mousemove', dragIt);
+				});
+			
+			});
+			
+			drg_elem[i].addEventListener('touchstart', function(e) {
+				
+				e.preventDefault();
+				if(check_playable === false) {
+					return;
+				}
+				initX = this.offsetLeft;
+				initY = this.offsetTop;
+				let touch = e.touches;
+				firstX = touch[0].pageX;
+				firstY = touch[0].pageY;
+				
+				this.addEventListener('touchmove', swipeIt);
+				
+				document.querySelector(div_holder).addEventListener('touchend', function(e) {
+					e.preventDefault();
+					drg_elem[i].removeEventListener('touchmove', swipeIt);
+				});
+			
 			});
 		
-		});
-	
+		}
 	}
-}
-
-function dragIt(e) {
-	this.style.left = initX+e.pageX-firstX + 'px';
-	this.style.top = initY+e.pageY-firstY + 'px';
-}
-
-function swipeIt(e) {
-	var contact = e.touches;
-	this.style.left = initX+contact[0].pageX-firstX + 'px';
-	this.style.top = initY+contact[0].pageY-firstY + 'px';
-}
+	
+	function dragIt(e) {
+		this.style.left = initX+e.pageX-firstX + 'px';
+		this.style.top = initY+e.pageY-firstY + 'px';
+	}
+	
+	function swipeIt(e) {
+		var contact = e.touches;
+		this.style.left = initX+contact[0].pageX-firstX + 'px';
+		this.style.top = initY+contact[0].pageY-firstY + 'px';
+	}
 }

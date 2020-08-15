@@ -47,13 +47,22 @@ let images = [
 		"https://i.ibb.co/cTDp6mh/hatter6.jpg"
 	];
 
-	/*
-	Or just call the function with a simple string
-	let image = "https://i.ibb.co/cTDp6mh/hatter6.jpg";
-	get_img_puzzle(image, ".PlayGround", "regular");
-	*/
-	
-	get_img_puzzle(images, ".PlayGround", "hard");
+	// passing this function to run when the player wins
+	function won() {
+		alert("you win");
+		for(let i = 0; i < element.length; i++ ) {
+			element[i].style.boxShadow = "inset 0px 0px 0px #ccc";
+		}
+	}
+
+	get_img_puzzle(settings = {
+		image: images,
+		holder_div: ".PlayGround",
+		after_win: won,
+		difficulty: "regular",
+		shuffle_delay: 3000,
+		shuffle_integer: 50
+		});
 </script>
 
 </body>
