@@ -1,33 +1,44 @@
-function getRandom(min, max) {
-	return Math.random() * (max - min) + min;
-}
-
-function get_img_puzzle(images, shuffle_delay = 3000, shuffle_int = 50) {
+function get_img_puzzle(images, div_holder, difficulty = "regular", shuffle_delay = 3000, shuffle_int = 50) {
 	
 	let img = new Image();
+	let check_playable = false;
 	
 	img.onload = function() {
-		let check_playable = false;
 		let original_sequence = "", sequence = "";
 		let imgwidth = img.width;
 		let imgheight = img.height;
 		let winheight = window.innerHeight;
 		let winwidth = window.innerWidth;
 		let ratio = Math.min(winwidth / imgwidth, winheight / imgheight);
-		// divide new_height and new_width with the number of pieces before using them
-		// when you use it, it will give back a round pixel number
-		let new_width = Math.round(imgwidth * ratio / 7)*7;
-		let new_height = Math.round(imgheight * ratio / 2)*2;
+		let new_width = 0, new_height = 0;
+		if(difficulty === "regular") {
+			// divide new_height and new_width with the number of pieces before using them
+			// when you use it, it will give back a round pixel number
+			new_width = Math.round(imgwidth * ratio / 7)*7;
+			new_height = Math.round(imgheight * ratio / 2)*2;
+		}
+		if(difficulty === "hard") {
+			new_width = Math.round(imgwidth * ratio / 7)*7;
+			new_height = Math.round(imgheight * ratio / 3)*3;
+		}
 		
 		// empty the main holder div
-		let main_holder = document.querySelector(".PlayGround");
+		let main_holder = document.querySelector(div_holder);
 		while(main_holder.firstChild) {
 			main_holder.removeChild(main_holder.firstChild);
 		}
 		
+		// setting how many elemnt going to be created depends on the difficulty
+		let elem_piece = 0;
+		if(difficulty === "regular") {
+			elem_piece = 13;
+		}
+		if(difficulty === "hard") {
+			elem_piece = 20;
+		}
 		// Adding pieces to html
 		// and adding data attributes to them. The data-piece is always the same, but the data-sequence will be changed
-		for (let i = 0; i <= 13; i++) {
+		for (let i = 0; i <= elem_piece; i++) {
 			main_holder.innerHTML += "<div data-piece='"+i+"' data-sequence="+i+" class='bg-elem'></div>\n";
 		}
 		
@@ -50,26 +61,50 @@ function get_img_puzzle(images, shuffle_delay = 3000, shuffle_int = 50) {
 			element[i].style.backgroundImage = "url('"+img.src+"')";
 			element[i].style.backgroundSize = new_width+'px '+new_height+'px';
 			element[i].style.width = new_width/7+'px';
-			element[i].style.height = new_height/2+'px';
+			if(difficulty === "regular") {
+				element[i].style.height = new_height/2+'px';
+			}
+			if(difficulty === "hard") {
+				element[i].style.height = new_height/3+'px';
+			}
 		}
 		
 		//setting elemnts position and bg position
 		let piece = 0;
 		for (let i = 0; i < element.length; i++) {
-			element[i].style.left = new_width/7*piece+'px';
-			// fisrt row
-			if (i <= 6) {
-				element[i].style.top = '0px';
+			if(difficulty === "regular") {
+				element[i].style.left = new_width/7*piece+'px';
+				// fisrt row
+				if (i <= 6) {
+					element[i].style.top = '0px';
+				}
+				// second row
+				if (i > 6) {
+					element[i].style.top = new_height/2+'px';
+				}
+
+				let leftPos = element[i].offsetLeft;
+				let topPos = element[i].offsetTop;
+				element[i].style.backgroundPosition = -leftPos+'px '+ -topPos+'px';
 			}
-			// second row
-			if (i > 6) {
-				element[i].style.top = new_height/2+'px';
+			if(difficulty === "hard") {
+				element[i].style.left = new_width/7*piece+'px';
+				// fisrt row
+				if (i <= 6) {
+					element[i].style.top = '0px';
+				}
+				// second row
+				if (i > 6 && i < 14) {
+					element[i].style.top = new_height/3+'px';
+				}
+				// third row
+				if (i >= 14) {
+					element[i].style.top = new_height/3+new_height/3+'px';
+				}
+				let leftPos = element[i].offsetLeft;
+				let topPos = element[i].offsetTop;
+				element[i].style.backgroundPosition = -leftPos+'px '+ -topPos+'px';
 			}
-			
-			let leftPos = element[i].offsetLeft;
-			let topPos = element[i].offsetTop;
-			element[i].style.backgroundPosition = -leftPos+'px '+ -topPos+'px';
-			
 			piece++;
 			if (piece == 7) {
 				piece = 0;
@@ -80,11 +115,11 @@ function get_img_puzzle(images, shuffle_delay = 3000, shuffle_int = 50) {
 		
 		// listening to mouse and touch events
 		for(let i = 0; i < element.length; i++) {
-			element[i].addEventListener("touchstart", function(event) {
+			element[i].addEventListener("touchstart", function() {
 				mouse_Down(element, element[i]);
 			});
 			
-			element[i].addEventListener("mousedown", function(event) {
+			element[i].addEventListener("mousedown", function() {
 				mouse_Down(element, element[i]);
 			});
 			
@@ -92,18 +127,23 @@ function get_img_puzzle(images, shuffle_delay = 3000, shuffle_int = 50) {
 			// and we manually pass a boolean that tells, is this a touch
 			element[i].addEventListener("touchend", function(event) {
 				mouse_Up(event, element, element[i], true);
+				check_for_playeable();
 			});
 			
 			element[i].addEventListener("mouseup", function(event) {
 				mouse_Up(event, element, element[i], false);
+				check_for_playeable();
+				
 			});
+
 		}
-		
+
 		// MOUSE DOWN
 		function mouse_Down(all_elem, this_elem) {
-			if(check_playable == false) {
+			if(check_playable === false) {
 				return;
 			}
+			this_elem.addEventListener('mouseleave', mouse_Up);
 			// turning off transition until drag
 			for(let i = 0; i < all_elem.length; i++) {
 				all_elem[i].style.transition = "all 0s";
@@ -115,26 +155,33 @@ function get_img_puzzle(images, shuffle_delay = 3000, shuffle_int = 50) {
 		
 		// MOUSE UP
 		function mouse_Up(e, all_elem, this_elem, touch) {
-			if(check_playable == false) {
+			if(check_playable === false) {
+				return;
+			}
+			if(e.type === "mouseleave") {
+				event.target.removeEventListener('mouseleave', mouse_Up);
+				event.target.style.top = original_pos[0]+'px';
+				event.target.style.left  = original_pos[1]+'px';
+				original_pos = [];
 				return;
 			}
 			// turning on transition after drag
 			for(let i = 0; i < all_elem.length; i++) {
 				all_elem[i].style.transition = "all 0.3s";
 			}
-			let left = window.innerWidth - document.querySelector(".PlayGround").getBoundingClientRect().right;
-			let top = window.innerHeight - document.querySelector(".PlayGround").getBoundingClientRect().bottom;
+			let left = window.innerWidth - document.querySelector(div_holder).getBoundingClientRect().right;
+			let top = window.innerHeight - document.querySelector(div_holder).getBoundingClientRect().bottom;
 			let mouse_pos = [];
 			let x,y;
 			// mouse
-			if(touch == false) {
+			if(touch === false) {
 				x = e.clientX;
 				y = e.clientY;
 				mouse_pos.push(x-left, y+top);
 			// tuch
-			} if(touch == true) {
-				top = document.querySelector(".PlayGround").getBoundingClientRect().top;
-				left = document.querySelector(".PlayGround").getBoundingClientRect().left;
+			} if(touch === true) {
+				top = document.querySelector(div_holder).getBoundingClientRect().top;
+				left = document.querySelector(div_holder).getBoundingClientRect().left;
 				x = e.changedTouches[0].clientX;
 				y = e.changedTouches[0].clientY;
 				mouse_pos.push(x-left, y-top);
@@ -171,7 +218,7 @@ function get_img_puzzle(images, shuffle_delay = 3000, shuffle_int = 50) {
 			elem2.style.top = original_pos[0]+'px';
 			elem2.style.left  = original_pos[1]+'px';
 			original_pos = [];
-			if(check_playable == true) {
+			if(check_playable === true) {
 				setTimeout(function() {
 					check_win();
 				},350);
@@ -203,6 +250,7 @@ function get_img_puzzle(images, shuffle_delay = 3000, shuffle_int = 50) {
 			}
 		}
 		
+		// shuffleing the elemnts
 		function shuffle() {
 			let random_elem = document.querySelectorAll(".bg-elem");
 			for(let i = 0; i <= shuffle_int; i++) {
@@ -224,48 +272,82 @@ function get_img_puzzle(images, shuffle_delay = 3000, shuffle_int = 50) {
 		setTimeout(function() {
 			shuffle();
 		},shuffle_delay);
-	}
-	let random_img = Math.floor(getRandom(0,images.length-1));
-	img.src = images[random_img];
-}
 
+		function check_for_playeable() {
+			if(check_playable === false) {
+				return;
+			} else {
+				check_playable = false;
+				setTimeout(function() {
+					check_playable = true;
+				},310);
+			}
+		}
+	}
+
+	// if the images variable is an array, I choose one random src of the array
+	if(Array.isArray(images)) {
+		let random_img = Math.floor(getRandom(0,images.length-1));
+		img.src = images[random_img];
+	}
+	// String
+	if(typeof images === "string") {
+		img.src = images;
+	}
+
+	function getRandom(min, max) {
+		return Math.random() * (max - min) + min;
+	}
+	
 // Draggable
 let initX, initY, firstX, firstY;
-function draggable_elements(object) {
-	for(let i = 0; i < object.length; i++) {
-		object[i].addEventListener('mousedown', function(e) {
-	
-		e.preventDefault();
-		initX = this.offsetLeft;
-		initY = this.offsetTop;
-		firstX = e.pageX;
-		firstY = e.pageY;
-	
-		this.addEventListener('mousemove', dragIt, false);
-	
-		document.querySelector(".PlayGround").addEventListener('mouseup', function() {
-			object[i].removeEventListener('mousemove', dragIt, false);
-		}, false);
-	
-		}, false);
-		
-		object[i].addEventListener('touchstart', function(e) {
-	
-		e.preventDefault();
-		initX = this.offsetLeft;
-		initY = this.offsetTop;
-		let touch = e.touches;
-		firstX = touch[0].pageX;
-		firstY = touch[0].pageY;
-	
-		this.addEventListener('touchmove', swipeIt, false);
-	
-		document.querySelector(".PlayGround").addEventListener('touchend', function(e) {
+function draggable_elements(drg_elem) {
+	if(check_playable === false) {
+		return;
+	}
+	for(let i = 0; i < drg_elem.length; i++) {
+		drg_elem[i].addEventListener('mousedown', function(e) {
+			
 			e.preventDefault();
-			object[i].removeEventListener('touchmove', swipeIt, false);
-		}, false);
-	
-		}, false);
+			if(check_playable === false) {
+				return;
+			}
+			initX = this.offsetLeft;
+			initY = this.offsetTop;
+			firstX = e.pageX;
+			firstY = e.pageY;
+			
+			this.addEventListener('mousemove', dragIt);
+			this.addEventListener('mouseleave', function() {
+				this.removeEventListener('mousemove', dragIt);
+			});
+			
+			document.querySelector(div_holder).addEventListener('mouseup', function() {
+				drg_elem[i].removeEventListener('mousemove', dragIt);
+			});
+
+		});
+		
+		drg_elem[i].addEventListener('touchstart', function(e) {
+			
+			e.preventDefault();
+			if(check_playable === false) {
+				return;
+			}
+			initX = this.offsetLeft;
+			initY = this.offsetTop;
+			let touch = e.touches;
+			firstX = touch[0].pageX;
+			firstY = touch[0].pageY;
+			
+			this.addEventListener('touchmove', swipeIt);
+			
+			document.querySelector(div_holder).addEventListener('touchend', function(e) {
+				e.preventDefault();
+				drg_elem[i].removeEventListener('touchmove', swipeIt);
+			});
+		
+		});
 	
 	}
 }
@@ -279,4 +361,5 @@ function swipeIt(e) {
 	var contact = e.touches;
 	this.style.left = initX+contact[0].pageX-firstX + 'px';
 	this.style.top = initY+contact[0].pageY-firstY + 'px';
+}
 }

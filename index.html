@@ -5,7 +5,7 @@
 	<title>Image Puzzle</title>
 	<link rel="shortcut icon" type="image/png" href="https://i.ibb.co/kg9Whwf/favico.png"/>
 	<link rel="stylesheet" href="css/img_puzzle.css" type="text/css">
-	<script src="js/img_puzzle.js"></script>
+	<script src="js/img_puzzle.min.js"></script>
 </head>
 <body>
 
@@ -46,8 +46,14 @@ let images = [
 		"https://i.ibb.co/Jkxjbrt/hatter8.jpg",
 		"https://i.ibb.co/cTDp6mh/hatter6.jpg"
 	];
+
+	/*
+	Or just call the function with a simple string
+	let image = "https://i.ibb.co/cTDp6mh/hatter6.jpg";
+	get_img_puzzle(image, ".PlayGround", "regular");
+	*/
 	
-	get_img_puzzle(images);
+	get_img_puzzle(images, ".PlayGround", "hard");
 </script>
 
 </body>
