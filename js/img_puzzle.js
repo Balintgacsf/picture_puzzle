@@ -80,7 +80,7 @@ function get_img_puzzle(settings) {
 			original_sequence = original_sequence + elem_data;
 		}
 		
-		// setting bg and elements height and width
+		// setting background and setting elements height and width
 		for(let i = 0; i < element.length; i++) {
 			element[i].style.backgroundImage = "url('"+img.src+"')";
 			element[i].style.backgroundSize = new_width+'px '+new_height+'px';
@@ -93,11 +93,18 @@ function get_img_puzzle(settings) {
 			}
 		}
 		
-		//setting elemnts position and bg position
+<<<<<<< HEAD
+		// setting elemnts positions
 		let piece = 0;
 		for (let i = 0; i < element.length; i++) {
+			element[i].style.left = new_width/7*piece+'px';
+=======
+		//setting elemnts positions and background positions
+		let piece = 0;
+		for (let i = 0; i < element.length; i++) {
+>>>>>>> ffa45cd0b636d8b2bb68526f531086a943b01fd9
+			// REGULAR
 			if(difficulty === "regular") {
-				element[i].style.left = new_width/7*piece+'px';
 				// fisrt row
 				if (i <= 6) {
 					element[i].style.top = '0px';
@@ -106,13 +113,9 @@ function get_img_puzzle(settings) {
 				if (i > 6) {
 					element[i].style.top = new_height/2+'px';
 				}
-
-				let leftPos = element[i].offsetLeft;
-				let topPos = element[i].offsetTop;
-				element[i].style.backgroundPosition = -leftPos+'px '+ -topPos+'px';
 			}
+			// HARD
 			if(difficulty === "hard") {
-				element[i].style.left = new_width/7*piece+'px';
 				// fisrt row
 				if (i <= 6) {
 					element[i].style.top = '0px';
@@ -125,10 +128,14 @@ function get_img_puzzle(settings) {
 				if (i >= 14) {
 					element[i].style.top = new_height/3+new_height/3+'px';
 				}
-				let leftPos = element[i].offsetLeft;
-				let topPos = element[i].offsetTop;
-				element[i].style.backgroundPosition = -leftPos+'px '+ -topPos+'px';
 			}
+
+			// setting background-position of each element
+			let leftPos = element[i].offsetLeft;
+			let topPos = element[i].offsetTop;
+			element[i].style.backgroundPosition = -leftPos+'px '+ -topPos+'px';
+
+			// counting pieces
 			piece++;
 			if (piece == 7) {
 				piece = 0;
@@ -139,96 +146,96 @@ function get_img_puzzle(settings) {
 		
 		// listening to mouse and touch events
 		for(let i = 0; i < element.length; i++) {
-			element[i].addEventListener("touchstart", function() {
-				mouse_Down(element, element[i]);
-			});
+			element[i].addEventListener("touchstart", event_function);
 			
-			element[i].addEventListener("mousedown", function() {
-				mouse_Down(element, element[i]);
-			});
+			element[i].addEventListener("mousedown", event_function);
 			
-			// mouse_up() function needs the event to get the position of touch or mouse,
-			// and we manually pass a boolean that tells, is this a touch
-			element[i].addEventListener("touchend", function(event) {
-				mouse_Up(event, element, element[i], true);
-				check_for_playeable();
-			});
+			element[i].addEventListener("touchend", event_function);
 			
-			element[i].addEventListener("mouseup", function(event) {
-				mouse_Up(event, element, element[i], false);
-				check_for_playeable();
+			element[i].addEventListener("mouseup", event_function);
+		}
+
+		function event_function(event) {
+			if(check_playable === false) {
+				return;
+			}
+
+			let all_elem = document.querySelectorAll("."+event.target.classList);
+
+			// MOUSEDOWN AND TOUCHSTART
+			if(event.type === "mousedown" || event.type === "touchstart") {
+				event.target.addEventListener('mouseleave', event_function);
 				
-			});
-
-		}
-
-		// MOUSE DOWN
-		function mouse_Down(all_elem, this_elem) {
-			if(check_playable === false) {
-				return;
+				// turning off transition until drag
+				for(let i = 0; i < all_elem.length; i++) {
+					all_elem[i].style.transition = "all 0s";
+				}
+				original_pos.push(event.target.offsetTop);
+				original_pos.push(event.target.offsetLeft);
+				event.target.style.zIndex = "999";
 			}
-			this_elem.addEventListener('mouseleave', mouse_Up);
-			// turning off transition until drag
-			for(let i = 0; i < all_elem.length; i++) {
-				all_elem[i].style.transition = "all 0s";
-			} // pushing the active element original position to the array
-			original_pos.push(this_elem.offsetTop);
-			original_pos.push(this_elem.offsetLeft);
-			this_elem.style.zIndex = "999";
-		}
-		
-		// MOUSE UP
-		function mouse_Up(e, all_elem, this_elem, touch) {
-			if(check_playable === false) {
-				return;
+
+			// MOUSEUP AND TOUCHEN
+			if(event.type === "touchend" || event.type === "mouseup") {
+				// turning on transition after drag
+				for(let i = 0; i < all_elem.length; i++) {
+					all_elem[i].style.transition = "all 0.3s";
+				}
+
+				let holder_pos = document.querySelector(div_holder).getBoundingClientRect();
+				let left = window.innerWidth - holder_pos.right;
+				let top = window.innerHeight - holder_pos.bottom;
+				let mouse_pos = [];
+				let x,y;
+
+				// MOUSE
+				if(event.type === "mouseup") {
+					x = event.clientX;
+					y = event.clientY;
+					mouse_pos.push(x-left, y+top);
+				}
+				// TOUCH
+				if(event.type === "touchend") {
+					top = holder_pos.top;
+					left = holder_pos.left;
+					x = event.changedTouches[0].clientX;
+					y = event.changedTouches[0].clientY;
+					mouse_pos.push(x-left, y-top);
+				}
+
+				// checking all the elements, if our finger or mouse is on them
+				let data_actual_piece = event.target.getAttribute('data-piece');
+				for(let i = 0; i < all_elem.length; i++) {
+					// we have to make sure that our element is not the one we dragging
+					if(i == data_actual_piece) {
+						continue;
+					}
+					// if the mouse or the finger is in the area of an other element
+					if(mouse_pos[0] > all_elem[i].offsetLeft && mouse_pos[0] < all_elem[i].offsetLeft+all_elem[i].offsetWidth && mouse_pos[1] > all_elem[i].offsetTop && mouse_pos[1] < all_elem[i].offsetTop+all_elem[i].offsetHeight) {
+						shuffle_elem(event.target,all_elem[i]);
+						break;
+					}
+					// if we do not hit other element, go back to our original position
+					if(i == all_elem.length-1) {
+						event.target.style.top = original_pos[0]+'px';
+						event.target.style.left  = original_pos[1]+'px';
+						original_pos = [];
+					}
+				}
+				event.target.style.zIndex = "1";
+
+				check_for_playeable();
 			}
-			if(e.type === "mouseleave") {
-				event.target.removeEventListener('mouseleave', mouse_Up);
+			
+			// MOUSELEAVE
+			if(event.type === "mouseleave") {
+				event.target.removeEventListener('mouseleave', event_function);
 				event.target.style.top = original_pos[0]+'px';
 				event.target.style.left  = original_pos[1]+'px';
 				original_pos = [];
 				return;
 			}
-			// turning on transition after drag
-			for(let i = 0; i < all_elem.length; i++) {
-				all_elem[i].style.transition = "all 0.3s";
-			}
-			let left = window.innerWidth - document.querySelector(div_holder).getBoundingClientRect().right;
-			let top = window.innerHeight - document.querySelector(div_holder).getBoundingClientRect().bottom;
-			let mouse_pos = [];
-			let x,y;
-			// mouse
-			if(touch === false) {
-				x = e.clientX;
-				y = e.clientY;
-				mouse_pos.push(x-left, y+top);
-			// tuch
-			} if(touch === true) {
-				top = document.querySelector(div_holder).getBoundingClientRect().top;
-				left = document.querySelector(div_holder).getBoundingClientRect().left;
-				x = e.changedTouches[0].clientX;
-				y = e.changedTouches[0].clientY;
-				mouse_pos.push(x-left, y-top);
-			}
-			// checking all the elements, if our finger or mouse is on them
-			let data_piece = this_elem.getAttribute('data-piece');
-			for(let i = 0; i < all_elem.length; i++) {
-				// we have to make sure that our element is not the one we dragging
-				if(i == data_piece) {
-					continue;
-				}
-				if(mouse_pos[0] > all_elem[i].offsetLeft && mouse_pos[0] < all_elem[i].offsetLeft+all_elem[i].offsetWidth && mouse_pos[1] > all_elem[i].offsetTop && mouse_pos[1] < all_elem[i].offsetTop+all_elem[i].offsetHeight) {
-					shuffle_elem(this_elem,all_elem[i]);
-					break;
-				}
-				// if we do not hit other element, go back to our original position
-				if(i == all_elem.length-1) {
-					this_elem.style.top = original_pos[0]+'px';
-					this_elem.style.left  = original_pos[1]+'px';
-					original_pos = [];
-				}
-			}
-			this_elem.style.zIndex = "1";
+
 		}
 		
 		// changing data attribute and positions
@@ -267,10 +274,11 @@ function get_img_puzzle(settings) {
 		}
 		
 		function win() {
-			win_function();
+			// passing the all elements array
+			win_function(element);
 		}
 		
-		// shuffleing the elemnts
+		// mixing the elemnts
 		function shuffle() {
 			let random_elem = document.querySelectorAll(".bg-elem");
 			for(let i = 0; i <= shuffle_int; i++) {
