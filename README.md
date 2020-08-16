@@ -56,7 +56,7 @@ get_img_puzzlesettings = {
 
 **after_win**: the function which will run when the player wins. ``` function ```
 
-**difficulty**: the difficulty of the game. Can be **regular** which means 14 pieces in 2 rows or **hard** which means 20 pieces in 3 rows. ``` string ```
+**difficulty**: the difficulty of the game. Can be **regular** which means 14 pieces in 2 rows or **hard** which means 21 pieces in 3 rows. ``` string ```
 
 **shuffle_delay**: The time in miliseconds to wait before shuffleing the image. (3000 by Default) ``` integer ```
 
