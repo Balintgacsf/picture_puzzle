@@ -81,7 +81,7 @@ The **Results object** returns:
 **time_m**: The time in minutes that the user played.
 
 **time_formatted**: It is an object. It contains **minutes** and the rest of the **seconds**. So you can output like: ``` you did it in 1 minute and 25 seconds.```
-See more about that in the examples section below.
+[See more](https://github.com/Balintgacsf/picture_puzzle#examples) about that in the examples section below.
 
 **total_shuffle**: The number of the elements that has been swapped before the game.
 
