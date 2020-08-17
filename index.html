@@ -5,11 +5,12 @@
 	<title>Image Puzzle</title>
 	<link rel="shortcut icon" type="image/png" href="https://i.ibb.co/kg9Whwf/favico.png"/>
 	<link rel="stylesheet" href="css/img_puzzle.css" type="text/css">
-	<script src="js/img_puzzle.min.js"></script>
+	<script src="js/img_puzzle.js"></script>
 </head>
 <body>
 
 <div class="PlayGround"></div>
+<button>Other Image</button>
 
 <script>
 let images = [
@@ -47,6 +48,17 @@ let images = [
 		"https://i.ibb.co/cTDp6mh/hatter6.jpg"
 	];
 
+	document.querySelector("button").addEventListener('click', function() {
+		get_img_puzzle({
+			image: images,
+			holder_div: ".PlayGround",
+			after_win: won,
+			difficulty: "hard",
+			shuffle_delay: 3000,
+			shuffle_integer: 50
+		});
+	});
+
 	// passing this function to run when the player wins
 	function won(results, element) {
 		console.log("You win! You did it in "+results.moves+" moves and "+results.time_formatted.minutes+" minute(s) and "+results.time_formatted.seconds+" seconds. The difficulty was "+ results.played_difficulty);
@@ -62,7 +74,7 @@ let images = [
 		difficulty: "hard",
 		shuffle_delay: 3000,
 		shuffle_integer: 50
-		});
+	});
 </script>
 
 </body>

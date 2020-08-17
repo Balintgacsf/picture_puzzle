@@ -85,6 +85,9 @@ function get_img_puzzle(settings) {
 		while(main_holder.firstChild) {
 			main_holder.removeChild(main_holder.firstChild);
 		}
+
+		// clear alredy running timeouts
+		clearTimeout(get_img_puzzle.wait);
 		
 		// setting how many elemnt going to be created depends on the difficulty
 		let elem_piece = 0;
@@ -224,7 +227,7 @@ function get_img_puzzle(settings) {
 				if(event.type === "mouseup") {
 					x = event.clientX;
 					y = event.clientY;
-					mouse_pos.push(x-left, y+top);
+					mouse_pos.push(x-left, y);
 				}
 				// TOUCH
 				if(event.type === "touchend") {
@@ -360,7 +363,8 @@ function get_img_puzzle(settings) {
 		}
 		
 		// waiting for shuffle
-		setTimeout(shuffle, shuffle_delay);
+		// adding setTimeout to the function
+		get_img_puzzle.wait = setTimeout(shuffle, shuffle_delay);
 
 		function check_for_playeable() {
 			if(check_playable === false) {
