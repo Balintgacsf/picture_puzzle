@@ -1,6 +1,14 @@
 function get_img_puzzle(settings) {
 
 	// accepting settings
+	try{
+		if(typeof settings !== "object") throw "An object must be passed to the function! Now it is: "+ typeof settings;
+	}
+	catch(err) {
+		console.error("get_img_puzzle : "+err);
+		return;
+	}
+
 	let images = settings.image;
 	let div_holder = settings.holder_div;
 	let win_function = settings.after_win;
@@ -9,16 +17,17 @@ function get_img_puzzle(settings) {
 	let shuffle_int = settings.shuffle_integer || 50;
 
 	try{
-		if(typeof images !== "string" && (!Array.isArray(images))) throw "images must be a string or an array";
-		if(typeof div_holder !== "string") throw "div_holder is not a string";
-		if(typeof win_function !== "function") throw "win_function is not a function";
-		if(typeof shuffle_delay !== "number") throw "shuffle_delay is not a number";
-		if(typeof shuffle_int !== "number") throw "shuffle_integer is not a number"
-		if(typeof difficulty !== "string") throw "difficulty is not a string";
+		if(typeof images !== "string" && (!Array.isArray(images))) throw "images expecting to be a string or an array, "+typeof images+" given";
+		if(typeof div_holder !== "string") throw "div_holder expecting to be a string, "+typeof div_holder+" given";
+		if(typeof win_function !== "function") throw "win_function expecting to be a function, "+typeof win_function+" given";
+		if(typeof shuffle_delay !== "number") throw "shuffle_delay expecting to be an number, "+typeof shuffle_delay+" given";
+		if(typeof shuffle_int !== "number") throw "shuffle_integer expecting to be an number, "+typeof shuffle_int+" given";
+		if(typeof difficulty !== "string") throw "difficulty expecting to be a string, "+typeof difficulty+" given";
 		if(difficulty !== "regular" && difficulty !== "hard") throw "difficulty can be regular or hard";
 	}
 	catch(err) {
-		console.log(err);
+		console.error("get_img_puzzle : "+err);
+		return;
 	}
 
 	// variables which are will be passed to the win_function
@@ -26,7 +35,7 @@ function get_img_puzzle(settings) {
 	let mov = 0;
 	// cancelled moves
 	let canc_mov = 0;
-	// time (will be in milliseconds)
+	// time
 	let time;
 	let fin_time;
 	
@@ -35,7 +44,14 @@ function get_img_puzzle(settings) {
 
 	document.querySelector(div_holder).style.position = "relative";
 	document.querySelector(div_holder).style.overflow = "hidden";
-	
+
+	// checking if there is any problem with the image load
+	img.onerror = img_load_failed;
+	function img_load_failed() {
+		console.error("get_img_puzzle : Image could not be loaded");
+		return;
+	}
+
 	img.onload = function() {
 		let original_sequence = "", sequence = "";
 		let imgwidth = img.width;
@@ -89,7 +105,7 @@ function get_img_puzzle(settings) {
 		main_holder.style.left = "50%";
 		main_holder.style.marginLeft = -new_width/2+'px';
 		
-		let element = document.querySelectorAll(".bg-elem");
+		let element = document.querySelectorAll(div_holder+" .bg-elem");
 		
 		// creating a string with the original sequence of elements
 		// we will check this string for get know did we win
@@ -172,7 +188,7 @@ function get_img_puzzle(settings) {
 				return;
 			}
 
-			let all_elem = document.querySelectorAll("."+event.target.classList);
+			let all_elem = document.querySelectorAll(div_holder+" ."+event.target.classList);
 
 			// MOUSEDOWN AND TOUCHSTART
 			if(event.type === "mousedown" || event.type === "touchstart") {
@@ -296,12 +312,26 @@ function get_img_puzzle(settings) {
 			// counting the played time
 			fin_time = new Date();
 			let total_time = fin_time - time;
+			// counting minutes and seconds together
+			let seconds_left = total_time/1000 % 60;
+			let time_format = {
+				minutes: Math.round(total_time/1000/60),
+				seconds: Math.floor(seconds_left)
+			};
 			// setting the result object
 			let results = {
+				// Moves
 				moves: mov,
 				cancelled_moves: canc_mov,
+				// Milliseconds
+				time_ms: total_time,
+				// Seconds
 				time_s: Math.floor(total_time/1000),
-				time_m: Math.floor(total_time/1000/60),
+				// Minutes
+				time_m: total_time/1000/60,
+				// Formatted time (minutes and seconds)
+				time_formatted: time_format,
+				// Difficulty
 				total_shuffle: shuffle_int,
 				played_difficulty: difficulty
 			};
@@ -312,14 +342,14 @@ function get_img_puzzle(settings) {
 		
 		// mixing the elemnts
 		function shuffle() {
-			let random_elem = document.querySelectorAll(".bg-elem");
-			for(let i = 0; i <= shuffle_int; i++) {
+			let random_elem = document.querySelectorAll(div_holder+" .bg-elem");
+			for(let i = 0; i < shuffle_int; i++) {
 				let random_num = Math.floor(Math.random() * random_elem.length);
 				let random_num2 = Math.floor(Math.random() * random_elem.length);
 				original_pos.push(random_elem[random_num].offsetTop);
 				original_pos.push(random_elem[random_num].offsetLeft);
 				shuffle_elem(random_elem[random_num],random_elem[random_num2]);
-				if(i == shuffle_int) {
+				if(i == shuffle_int-1) {
 					check_playable = true;
 					for(let i = 0; i < element.length; i++) {
 						element[i].style.boxShadow = "inset 1px 1px 3px #ccc";
@@ -329,9 +359,8 @@ function get_img_puzzle(settings) {
 			}
 		}
 		
-		setTimeout(function() {
-			shuffle();
-		},shuffle_delay);
+		// waiting for shuffle
+		setTimeout(shuffle, shuffle_delay);
 
 		function check_for_playeable() {
 			if(check_playable === false) {
