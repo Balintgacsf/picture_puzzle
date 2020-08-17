@@ -48,8 +48,8 @@ let images = [
 	];
 
 	// passing this function to run when the player wins
-	function won(element) {
-		alert("you win");
+	function won(results, element) {
+		console.log("You win! You did it in "+results.moves+" moves and "+results.time_s+" seconds. The difficulty was "+ results.played_difficulty);
 		for(let i = 0; i < element.length; i++ ) {
 			element[i].style.boxShadow = "inset 0px 0px 0px #ccc";
 		}
@@ -59,7 +59,7 @@ let images = [
 		image: images,
 		holder_div: ".PlayGround",
 		after_win: won,
-		difficulty: "regular",
+		difficulty: "hard",
 		shuffle_delay: 100,
 		shuffle_integer: 1
 		});

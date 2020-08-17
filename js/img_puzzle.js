@@ -20,6 +20,15 @@ function get_img_puzzle(settings) {
 	catch(err) {
 		console.log(err);
 	}
+
+	// variables which are will be passed to the win_function
+	// moves
+	let mov = 0;
+	// cancelled moves
+	let canc_mov = 0;
+	// time (will be in milliseconds)
+	let time;
+	let fin_time;
 	
 	let img = new Image();
 	let check_playable = false;
@@ -46,7 +55,16 @@ function get_img_puzzle(settings) {
 			new_height = Math.round(imgheight * ratio / 3)*3;
 		}
 		
-		// empty the main holder div
+		// empty the main holder div and if there are ".bg-elem"-s then remove their the eventListenres too
+		if(document.querySelectorAll(".bg-elem")) {
+			let element = document.querySelectorAll(".bg-elem");
+			for(let i = 0; i < element.length; i++) {
+				element[i].removeEventListener("touchstart", event_function);
+				element[i].removeEventListener("mousedown", event_function);
+				element[i].removeEventListener("touchend", event_function);
+				element[i].removeEventListener("mouseup", event_function);
+			}
+		}
 		let main_holder = document.querySelector(div_holder);
 		while(main_holder.firstChild) {
 			main_holder.removeChild(main_holder.firstChild);
@@ -167,6 +185,10 @@ function get_img_puzzle(settings) {
 				original_pos.push(event.target.offsetTop);
 				original_pos.push(event.target.offsetLeft);
 				event.target.style.zIndex = "999";
+				// starting the timer on first move
+				if(mov === 0) {
+					time = new Date();
+				}
 			}
 
 			// MOUSEUP AND TOUCHEN
@@ -207,6 +229,7 @@ function get_img_puzzle(settings) {
 					// if the mouse or the finger is in the area of an other element
 					if(mouse_pos[0] > all_elem[i].offsetLeft && mouse_pos[0] < all_elem[i].offsetLeft+all_elem[i].offsetWidth && mouse_pos[1] > all_elem[i].offsetTop && mouse_pos[1] < all_elem[i].offsetTop+all_elem[i].offsetHeight) {
 						shuffle_elem(event.target,all_elem[i]);
+						mov++;
 						break;
 					}
 					// if we do not hit other element, go back to our original position
@@ -214,6 +237,7 @@ function get_img_puzzle(settings) {
 						event.target.style.top = original_pos[0]+'px';
 						event.target.style.left  = original_pos[1]+'px';
 						original_pos = [];
+						canc_mov++;
 					}
 				}
 				event.target.style.zIndex = "1";
@@ -267,9 +291,23 @@ function get_img_puzzle(settings) {
 			}
 		}
 		
+		// WIN_FUNCTION
 		function win() {
-			// passing the all elements array
-			win_function(element);
+			// counting the played time
+			fin_time = new Date();
+			let total_time = fin_time - time;
+			// setting the result object
+			let results = {
+				moves: mov,
+				cancelled_moves: canc_mov,
+				time_s: Math.floor(total_time/1000),
+				time_m: Math.floor(total_time/1000/60),
+				total_shuffle: shuffle_int,
+				played_difficulty: difficulty
+			};
+
+			// passing the element array
+			win_function(results, element);
 		}
 		
 		// mixing the elemnts
