@@ -2,7 +2,7 @@
 
 Split pictures into 14 pieces and shuffle them.
 After shuffle you can drag each piece and replace it with an other piece.
-Also checking if you replace all elements to the original position.
+If the user wins, the function can send back statistics of the game.
 It is working with mouse events and touch events as well.
 
 ## Setup
@@ -21,7 +21,7 @@ In the body just add one div with class you choose. In this example I'm gonna us
 ```
 ### Javascript
 
-You have to pass the ```settings``` object to the function with the image(s), the main holder div and a function which will run when the player wins.
+You have to pass the ```settings``` object to the function with the image(s), the main holder div where the game will be placed and a function which will run when the player wins.
 If you want, you can create an array with the paths of the images you want to shuffle and pass it to the function. The function will select random image from the array each time you call the function.
 
 ```javascript
@@ -35,7 +35,8 @@ let images = [
 get_img_puzzle(settings = {
 		image: images,
 		holder_div: ".PlayGround",
-		after_win: won,);
+		after_win: won
+		});
 ```
 
 The ``` get_img_puzzle() ``` function is waiting for three arguments in the settings object. The other three is optional: 
@@ -54,13 +55,38 @@ get_img_puzzlesettings = {
 
 **holder_div**: the selector of the main holder div where the image will be displayed. ``` string ```
 
-**after_win**: the function which will run when the player wins. ``` function ```
+**after_win**: the function which will run when the player wins. Remember to **not** to invoke the function so do not put the ```()```. ``` function ```
 
 **difficulty**: the difficulty of the game. Can be **regular** which means 14 pieces in 2 rows or **hard** which means 21 pieces in 3 rows. ``` string ```
 
 **shuffle_delay**: The time in miliseconds to wait before shuffleing the image. (3000 by Default) ``` integer ```
 
-**shuffle_integer**: Every shuffle change two elements positions. You can set how many shuffle you want. (50 by Default) ``` integer ```
+**shuffle_integer**: Every shuffle swaps two elements positions. You can set how many shuffle you want. (50 by Default) ``` integer ```
+
+### After win
+
+After the game finished, so when the user solved the puzzle, the function can send you statics of the play. Like moves, time etc..
+It gives your function (what you passed in the ```after_win```) one object called **results** and an array of the function created elements.
+
+The **Results object** returns:
+
+**moves**: All moves that the user did. In other words the number when two elements has been swapped.
+
+**cancelled_moves**: All moves that then did not end in a swap, so the user changed his or her mind.
+
+**time_ms**: The time in milliseconds that the user played.
+
+**time_s**: The time in seconds that the user played.
+
+**time_m**: The time in minutes that the user played.
+
+**time_formatted**: It is an object. It contains **minutes** and the rest of the **seconds**. So you can output like: ``` you did it in 1 minute and 25 seconds.```
+See more about that in the examples section below.
+
+**total_shuffle**: The number of the elements that has been swapped before the game.
+
+**played_difficulty**: The difficulty that the user played. Can be **regular** or **hard**.
+
 
 ### Additional information:
 In the css file I disable chrome's 'pull to refresh' function by setting ``` overscroll-behavior-y: contain; ```for the html and body.
@@ -116,4 +142,37 @@ function won() {
     alert("you win");
 }
 ```
+**Working with statics of the play if the user wins**
+```javascript
+// array of image sources
+let images = [
+	"https://i.ibb.co/VBNcJBr/hatter7.jpg",
+	"https://i.ibb.co/dL0rjZb/hatter5.jpg",
+	"https://i.ibb.co/1MkR9LN/hatter4.jpg",
+	"https://i.ibb.co/mhhKxP5/hatter3.jpg"
+	];
+	
+	// passing this function to run when the player wins
+	// note that the function is waiting for two arguments: results and element
+	function won(results, element) {
+		let moves = results.moves;
+		// the time_formatted is an object and it has two values: minutes and the rest of the seconds
+		let f_minutes = results.time_formatted.minutes;
+		let f_seconds = results.time_formatted.seconds;
+		let difficulty = results.played_difficulty;
+		
+		// output the personalized message
+		console.log("You win! You did it in "+moves+" moves and "+f_minutes+" minute(s) and "+f_seconds+" seconds. The difficulty was "+ difficulty);
+		// removing the box-shadow of all elements
+		for(let i = 0; i < element.length; i++ ) {
+			element[i].style.boxShadow = "inset 0px 0px 0px #ccc";
+		}
+	}
+	
+	// setting up the puzzle
+	get_img_puzzle({
+		image: images,
+		holder_div: ".PlayGround",
+		after_win: won
+	});
 
