@@ -15,6 +15,7 @@ function get_img_puzzle(settings) {
 	let difficulty = settings.difficulty || "regular";
 	let shuffle_delay = settings.shuffle_delay || 3000;
 	let shuffle_int = settings.shuffle_integer || 50;
+	let box_shadow = settings.elem_shadow;
 
 	try{
 		if(typeof images !== "string" && (!Array.isArray(images))) throw "images expecting to be a string or an array, "+typeof images+" given";
@@ -22,12 +23,18 @@ function get_img_puzzle(settings) {
 		if(typeof win_function !== "function") throw "win_function expecting to be a function, "+typeof win_function+" given";
 		if(typeof shuffle_delay !== "number") throw "shuffle_delay expecting to be an number, "+typeof shuffle_delay+" given";
 		if(typeof shuffle_int !== "number") throw "shuffle_integer expecting to be an number, "+typeof shuffle_int+" given";
+		if(typeof box_shadow !== "boolean" && typeof box_shadow !== "undefined") throw "elem_shadow expecting to be an boolean, "+typeof box_shadow+" given";
 		if(typeof difficulty !== "string") throw "difficulty expecting to be a string, "+typeof difficulty+" given";
 		if(difficulty !== "regular" && difficulty !== "hard") throw "difficulty can be regular or hard";
 	}
 	catch(err) {
 		console.error("get_img_puzzle : "+err);
 		return;
+	}
+
+	// setting box_shadow to true if undefined
+	if(typeof box_shadow === "undefined") {
+		box_shadow = true;
 	}
 
 	// variables which are will be passed to the win_function
@@ -86,8 +93,13 @@ function get_img_puzzle(settings) {
 			main_holder.removeChild(main_holder.firstChild);
 		}
 
-		// clear alredy running timeouts
-		clearTimeout(get_img_puzzle.wait);
+		// if the puzzle was made in the same div as before, clear alredy running timeouts
+		if(get_img_puzzle.holder === div_holder) {
+			clearTimeout(get_img_puzzle.wait);
+		}
+
+		// update the holder div
+		get_img_puzzle.holder = div_holder;
 		
 		// setting how many elemnt going to be created depends on the difficulty
 		let elem_piece = 0;
@@ -119,6 +131,7 @@ function get_img_puzzle(settings) {
 		
 		// setting background and setting elements height and width
 		for(let i = 0; i < element.length; i++) {
+			element[i].style.position = "absolute";
 			element[i].style.backgroundImage = "url('"+img.src+"')";
 			element[i].style.backgroundSize = new_width+'px '+new_height+'px';
 			element[i].style.width = new_width/7+'px';
@@ -341,6 +354,13 @@ function get_img_puzzle(settings) {
 
 			// passing the element array
 			win_function(results, element);
+
+			// removing the box-shadow of all elements
+			if(box_shadow === true) {
+				for(let i = 0; i < element.length; i++ ) {
+					element[i].style.boxShadow = "inset 0px 0px 0px #ccc";
+				}
+			}
 		}
 		
 		// mixing the elemnts
@@ -354,8 +374,10 @@ function get_img_puzzle(settings) {
 				shuffle_elem(random_elem[random_num],random_elem[random_num2]);
 				if(i == shuffle_int-1) {
 					check_playable = true;
-					for(let i = 0; i < element.length; i++) {
-						element[i].style.boxShadow = "inset 1px 1px 3px #ccc";
+					if(box_shadow === true) {
+						for(let i = 0; i < element.length; i++) {
+							element[i].style.boxShadow = "inset 1px 1px 3px #ccc";
+						}
 					}
 					draggable_elements(element); // Enabling draggable
 				}
