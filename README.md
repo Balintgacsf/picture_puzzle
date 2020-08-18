@@ -1,21 +1,20 @@
 # Picture Puzzle
 
-Split pictures into 14 pieces and shuffle them.
+Split pictures into pieces and shuffle them.
 After shuffle you can drag each piece and replace it with an other piece.
 If the user wins, the function can send back statistics of the game.
 It is working with mouse events and touch events as well.
 
 ## Setup
 ### html
-Add the css file and the js file into the head section:
+Add the js file into the head section:
 ```html
 <head>
-    <link rel="stylesheet" href="css/img_puzzle.css" type="text/css">
     <script src="js/img_puzzle.min.js"></script>
     <!--<script src="js/img_puzzle.js"></script>-->
 </head>
 ```
-In the body just add one div with class you choose. In this example I'm gonna use ```PlayGround```.
+In the body just add one div with class you choose. In this example we are gonna use ```PlayGround```.
 ```html
 <div class="PlayGround"></div>
 ```
@@ -63,6 +62,8 @@ get_img_puzzlesettings = {
 
 **shuffle_integer**: Every shuffle swaps two elements positions. You can set how many shuffle you want. (50 by Default) ``` integer ```
 
+**elem_shadow**: Control the box-shadow on all element (```inset 1px 1px 3px #ccc```). True by default. ```boolean```
+
 ### After win
 
 After the game finished, so when the user solved the puzzle, the function can send you statics of the play. Like moves, time etc..
@@ -86,10 +87,6 @@ The **Results object** returns:
 **total_shuffle**: The number of the elements that has been swapped before the game.
 
 **played_difficulty**: The difficulty that the user played. Can be **regular** or **hard**.
-
-
-### Additional information:
-In the css file I disable chrome's 'pull to refresh' function by setting ``` overscroll-behavior-y: contain; ```for the html and body.
 
 [Demo Here](https://codepen.io/Balint_Gacsfalvy/pen/rNxYQog)
 
