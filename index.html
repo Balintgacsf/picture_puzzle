@@ -55,6 +55,18 @@ let images = [
 		console.log("You win! You did it in "+moves+" moves and "+f_minutes+" minute(s) and "+f_seconds+" seconds. The difficulty was "+ difficulty);
 	}
 
+	function What_is_happening(happen) {
+		if(happen === true) {
+			console.log("I'm done with the shuffle");
+		} else {
+			console.log("I Just started to shuffle");
+		}
+	}
+
+	function started() {
+		console.log("Yea I'm running too");
+	}
+
 	get_img_puzzle({
 		image: images,
 		holder_div: ".PlayGround",
@@ -62,7 +74,9 @@ let images = [
 		difficulty: "hard",
 		shuffle_delay: 3000,
 		shuffle_integer: 50,
-		elem_shadow: true
+		elem_shadow: true,
+		until_shuffle: What_is_happening,
+		on_shuffle: started
 	});
 </script>
 

@@ -16,16 +16,41 @@ function get_img_puzzle(settings) {
 	let shuffle_delay = settings.shuffle_delay || 3000;
 	let shuffle_int = settings.shuffle_integer || 50;
 	let box_shadow = settings.elem_shadow;
+	let on_shuffle = settings.on_shuffle || false;
+	let until_shuffle = settings.until_shuffle;
 
+
+	// error messages
 	try{
-		if(typeof images !== "string" && (!Array.isArray(images))) throw "images expecting to be a string or an array, "+typeof images+" given";
-		if(typeof div_holder !== "string") throw "div_holder expecting to be a string, "+typeof div_holder+" given";
-		if(typeof win_function !== "function") throw "win_function expecting to be a function, "+typeof win_function+" given";
-		if(typeof shuffle_delay !== "number") throw "shuffle_delay expecting to be an number, "+typeof shuffle_delay+" given";
-		if(typeof shuffle_int !== "number") throw "shuffle_integer expecting to be an number, "+typeof shuffle_int+" given";
-		if(typeof box_shadow !== "boolean" && typeof box_shadow !== "undefined") throw "elem_shadow expecting to be an boolean, "+typeof box_shadow+" given";
-		if(typeof difficulty !== "string") throw "difficulty expecting to be a string, "+typeof difficulty+" given";
-		if(difficulty !== "regular" && difficulty !== "hard") throw "difficulty can be regular or hard";
+		if(typeof images !== "string" && (!Array.isArray(images)))
+		throw "images expecting to be a string or an array, "+typeof images+" given";
+
+		if(typeof div_holder !== "string")
+		throw "div_holder expecting to be a string, "+typeof div_holder+" given";
+
+		if(typeof win_function !== "function")
+		throw "after_win expecting to be a function, "+typeof win_function+" given";
+
+		if(typeof shuffle_delay !== "number")
+		throw "shuffle_delay expecting to be a number, "+typeof shuffle_delay+" given";
+
+		if(typeof shuffle_int !== "number")
+		throw "shuffle_integer expecting to be a number, "+typeof shuffle_int+" given";
+
+		if(typeof box_shadow !== "boolean" && typeof box_shadow !== "undefined")
+		throw "elem_shadow expecting to be a boolean, "+typeof box_shadow+" given";
+
+		if(typeof difficulty !== "string")
+		throw "difficulty expecting to be a string, "+typeof difficulty+" given";
+
+		if(difficulty !== "regular" && difficulty !== "hard")
+		throw "difficulty can be regular or hard";
+
+		if(on_shuffle !== "function" && on_shuffle === "boolean")
+		throw "on_shuffle expecting to be a function, "+ typeof on_shuffle+ " given";
+
+		if(until_shuffle !== "function" && until_shuffle === "boolean")
+		throw "until_shuffle expecting to be a function, "+ typeof until_shuffle+ " given";
 	}
 	catch(err) {
 		console.error("get_img_puzzle : "+err);
@@ -388,6 +413,13 @@ function get_img_puzzle(settings) {
 		
 		// mixing the elemnts
 		function shuffle() {
+			// shuffle begined
+			if(on_shuffle) {
+				on_shuffle();
+			}
+			if(until_shuffle) {
+				until_shuffle();
+			}
 			let random_elem = document.querySelectorAll(div_holder+" .bg-elem");
 			for(let i = 0; i < shuffle_int; i++) {
 				let random_num = Math.floor(Math.random() * random_elem.length);
@@ -447,6 +479,9 @@ function get_img_puzzle(settings) {
 								}
 							}
 							draggable_elements(element); // Enabling draggable
+							if(until_shuffle) {
+								until_shuffle(true);
+							}
 						},1+i*100);
 					}
 				}
