@@ -38,7 +38,7 @@ get_img_puzzle(settings = {
 		});
 ```
 
-The ``` get_img_puzzle() ``` function is waiting for three arguments in the settings object. The other four is optional: 
+The ``` get_img_puzzle() ``` function is waiting for three arguments in the settings object. The other six is optional: 
 ```javascript
 get_img_puzzlesettings = {
 		image: images, // needed
@@ -51,19 +51,28 @@ get_img_puzzlesettings = {
 		}); 
 ```
 
-**image**: the string or array which are contains the images sources. ```string || array```
+**image**: ```string || array``` the string or array which are contains the images sources.
 
-**holder_div**: the selector of the main holder div where the image will be displayed. ``` string ```
+**holder_div**: ``` string ``` the selector of the main holder div where the image will be displayed.
 
-**after_win**: the function which will run when the player wins. Remember to **not** to invoke the function so do not put the ```()```. ``` function ```
+**after_win**: ``` function ``` the function which will run when the player wins. Remember to **not** to invoke the function so do not put the ```()```.
 
-**difficulty**: the difficulty of the game. Can be **regular** which means 14 pieces in 2 rows or **hard** which means 21 pieces in 3 rows. ``` string ```
+**difficulty**: ``` string ``` the difficulty of the game. Can be **regular** which means 14 pieces in 2 rows or **hard** which means 21 pieces in 3 rows.
 
-**shuffle_delay**: The time in miliseconds to wait before shuffleing the image. (3000 by Default) ``` integer ```
+**shuffle_delay**: ``` number ``` The time in miliseconds to wait before shuffleing the image. (3000 by Default).
 
-**shuffle_integer**: Every shuffle swaps two elements positions. You can set how many shuffle you want. (50 by Default) ``` integer ```
+**shuffle_integer**: ``` number ``` Every shuffle swaps two elements positions. You can set how many shuffle you want. (50 by Default)
 
-**elem_shadow**: Control the box-shadow on all element (```inset 1px 1px 3px #ccc```). True by default. ```boolean```
+**elem_shadow**: ```boolean``` Control the box-shadow on all element (```inset 1px 1px 3px #ccc```). True by default.
+
+**on_shuffle**: ```function``` the function which will run when the image is loaded and the shuffle function started to swap the elements.
+
+**until_shuffle**: ```function``` the function which will run two times:
+
+- First time when the image is loaded and the shuffle function started to swap the elements.
+- Second time when the shuffle is done (including animations), but this time your function will get an argument (a ```true```)
+[See the examples](https://github.com/Balintgacsf/picture_puzzle#examples)
+
 
 ### After win
 
@@ -140,7 +149,7 @@ function won() {
     alert("you win");
 }
 ```
-**Working with statics of the play if the user wins**
+**Working with statics of the play when the user wins**
 ```javascript
 // array of image sources
 let images = [
@@ -173,4 +182,71 @@ let images = [
 		holder_div: ".PlayGround",
 		after_win: won
 	});
+```
+	
+**Get notify when the game started to shuffle**
+```javascript
+let images = [
+	"https://i.ibb.co/VBNcJBr/hatter7.jpg",
+	"https://i.ibb.co/dL0rjZb/hatter5.jpg",
+	"https://i.ibb.co/1MkR9LN/hatter4.jpg",
+	"https://i.ibb.co/mhhKxP5/hatter3.jpg"
+	];
 
+// afer the player wins
+function won() {
+	alert("You win!");
+}
+
+// this function will run when the image is loaded and the swapping has begun
+function started() {
+	console.log("Started to swap the elements");
+}
+	
+// setting up the puzzle
+// passing the function to get_img_puzzle
+	get_img_puzzle({
+		image: images,
+		holder_div: ".PlayGround",
+		after_win: won,
+		on_shuffle: started
+	});
+```
+
+**Get notify when the game started to shuffle and also get notify when the game finished the shuffle**
+```javascript
+let images = [
+	"https://i.ibb.co/VBNcJBr/hatter7.jpg",
+	"https://i.ibb.co/dL0rjZb/hatter5.jpg",
+	"https://i.ibb.co/1MkR9LN/hatter4.jpg",
+	"https://i.ibb.co/mhhKxP5/hatter3.jpg"
+	];
+
+// afer the player wins
+function won() {
+	alert("You win!");
+}
+
+// this function will be passed to the until_shuffle
+// the function will run two times:
+// first when the image is loaded and the shuffle function started to swap the elements
+// second time when the shuffle function is finished, but this time your function will get an argument
+function isShuffle(state) {
+	// argument arrived, the shuffle is finished
+	if(state === true) {
+		console.log("I'm done with the shuffle");
+	}
+	// the function is runned without the argument so the shuffle begun but not finished
+	else {
+		console.log("I just started to swap the elements");
+	}
+}
+
+// setting up the puzzle
+// passing the function to get_img_puzzle
+	get_img_puzzle({
+		image: images,
+		holder_div: ".PlayGround",
+		after_win: won,
+		until_shuffle: isShuffle
+	});
