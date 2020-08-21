@@ -45,6 +45,9 @@ function get_img_puzzle(settings) {
 	// time
 	let time;
 	let fin_time;
+
+	let element_height = "";
+	let element_width = "";
 	
 	let img = new Image();
 	let check_playable = false;
@@ -134,19 +137,21 @@ function get_img_puzzle(settings) {
 			element[i].style.position = "absolute";
 			element[i].style.backgroundImage = "url('"+img.src+"')";
 			element[i].style.backgroundSize = new_width+'px '+new_height+'px';
-			element[i].style.width = new_width/7+'px';
+			element_width = new_width/7;
+			element[i].style.width = element_width+'px';
 			if(difficulty === "regular") {
-				element[i].style.height = new_height/2+'px';
+				element_height = new_height/2;
 			}
 			if(difficulty === "hard") {
-				element[i].style.height = new_height/3+'px';
+				element_height = new_height/3;
 			}
+			element[i].style.height = element_height+'px';
 		}
 		
 		// setting elemnts positions and background positions
 		let piece = 0;
 		for (let i = 0; i < element.length; i++) {
-			element[i].style.left = new_width/7*piece+'px';
+			element[i].style.left = element_width*piece+'px';
 			// REGULAR
 			if(difficulty === "regular") {
 				// fisrt row
@@ -155,7 +160,7 @@ function get_img_puzzle(settings) {
 				}
 				// second row
 				if (i > 6) {
-					element[i].style.top = new_height/2+'px';
+					element[i].style.top = element_height+'px';
 				}
 			}
 			// HARD
@@ -166,11 +171,11 @@ function get_img_puzzle(settings) {
 				}
 				// second row
 				if (i > 6 && i < 14) {
-					element[i].style.top = new_height/3+'px';
+					element[i].style.top = element_height+'px';
 				}
 				// third row
 				if (i >= 14) {
-					element[i].style.top = new_height/3+new_height/3+'px';
+					element[i].style.top = element_height+element_height+'px';
 				}
 			}
 
@@ -185,6 +190,24 @@ function get_img_puzzle(settings) {
 				piece = 0;
 			}
 		}
+
+		// creating the overlay element and setting the css
+		let overlayCreate = document.createElement("DIV");
+		overlayCreate.classList.add("overlay_div");
+		document.querySelector(div_holder).appendChild(overlayCreate);
+		let overlay = document.querySelector(".overlay_div");
+		overlay.setAttribute("style",
+		"position: relative;"+
+		"width: 100%;"+
+		"height: 100%;"+
+		"left: 0px;"+
+		"top: 0px;"+
+		"background-image: url(\'"+img.src+"\');"+
+		"background-size: "+new_width+"px "+new_height+"px;"+
+		"background-position: -"+overlay.offsetLeft+"px "+"-"+overlay.offsetTop+"px;"+
+		"z-index: 999;"+
+		"transition: all .3s linear;"
+		);
 		
 		let original_pos = [];
 		
@@ -372,16 +395,63 @@ function get_img_puzzle(settings) {
 				original_pos.push(random_elem[random_num].offsetTop);
 				original_pos.push(random_elem[random_num].offsetLeft);
 				shuffle_elem(random_elem[random_num],random_elem[random_num2]);
+				// the shuffle is finsihed
 				if(i == shuffle_int-1) {
-					check_playable = true;
-					if(box_shadow === true) {
-						for(let i = 0; i < element.length; i++) {
-							element[i].style.boxShadow = "inset 1px 1px 3px #ccc";
-						}
-					}
-					draggable_elements(element); // Enabling draggable
+					animate_shuffle();
 				}
 			}
+		}
+
+		function animate_shuffle() {
+			// saving all elements positions
+			let elemTopPositions = [];
+			let elemLeftPositions = [];
+			for(let i = 0; i < element.length; i++) {
+				elemTopPositions.push(element[i].offsetTop);
+				elemLeftPositions.push(element[i].offsetLeft);
+			}
+			// setting elements new temporary positions (center of the game)
+			let top =  new_height/2-element_height/2;
+			let left = new_width/2-element_width/2;
+			for(let i = 0; i < element.length; i++) {
+				element[i].style.top = top+'px';
+				element[i].style.left = left+'px';
+			}
+
+			// setting the overlay as big as one element and placing exactly the center of the game
+			overlay.style.top = top+'px';
+			overlay.style.left = left+'px';
+			overlay.style.width = element_width+'px';
+			overlay.style.height = element_height+'px';
+			overlay.style.backgroundPosition = "-"+left+'px '+ "-"+top+'px';
+
+			// the setTimeout function is waiting for 400 ms because the transition on the element is 300 ms
+			setTimeout(function() {
+				// turning on transition until shuffle animation
+				for(let i = 0; i < element.length; i++) {
+					element[i].style.transition = "all 0.3s";
+				}
+
+				// dropping elements back to new positions
+				for(let i = 0; i < element.length; i++) {
+					setTimeout(function() {
+						element[i].style.top = elemTopPositions[i]+'px';
+						element[i].style.left = elemLeftPositions[i]+'px';
+					},i*100);
+					if(i === element.length-1) {
+						setTimeout(function() {
+							check_playable = true;
+							if(box_shadow === true) {
+								for(let i = 0; i < element.length; i++) {
+									element[i].style.boxShadow = "inset 1px 1px 3px #ccc";
+								}
+							}
+							draggable_elements(element); // Enabling draggable
+						},1+i*100);
+					}
+				}
+				overlay.remove();
+			},400);
 		}
 		
 		// waiting for shuffle
