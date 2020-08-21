@@ -38,15 +38,16 @@ get_img_puzzle(settings = {
 		});
 ```
 
-The ``` get_img_puzzle() ``` function is waiting for three arguments in the settings object. The other three is optional: 
+The ``` get_img_puzzle() ``` function is waiting for three arguments in the settings object. The other four is optional: 
 ```javascript
 get_img_puzzlesettings = {
 		image: images, // needed
 		holder_div: ".PlayGround", // needed
 		after_win: won, // needed
-		difficulty: "regular", //optional
-		shuffle_delay: 3000, //optional
-		shuffle_integer: 50 //optional
+		difficulty: "regular", // optional
+		shuffle_delay: 3000, // optional
+		shuffle_integer: 50, // optional
+		elem_shadow: true // optional
 		}); 
 ```
 
