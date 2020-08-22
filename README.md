@@ -5,6 +5,8 @@ After shuffle you can drag each piece and replace it with an other piece.
 If the user wins, the function can send back statistics of the game.
 It is working with mouse events and touch events as well.
 
+[Demo Here](https://codepen.io/Balint_Gacsfalvy/pen/rNxYQog)
+
 ## Setup
 ### html
 Add the js file into the head section:
@@ -20,8 +22,8 @@ In the body just add one div with class you choose. In this example we are gonna
 ```
 ### Javascript
 
-You have to pass the ```settings``` object to the function with the image(s), the main holder div where the game will be placed and a function which will run when the player wins.
-If you want, you can create an array with the paths of the images you want to shuffle and pass it to the function. The function will select random image from the array each time you call the function.
+You have to pass the ```settings``` object to the function with the image(s), the main holder div's selector where the game will be placed and a function which will run when the player wins.
+If you want, you can create an array with the paths of the images what you want to shuffle and pass it to the function. The function will select random image from the array each time you call the function.
 
 ```javascript
 let images = [
@@ -40,6 +42,7 @@ get_img_puzzle(settings = {
 
 The ``` get_img_puzzle() ``` function is waiting for three arguments in the settings object. The other six is optional: 
 ```javascript
+// here are listed the parameters and the default values of the settings
 get_img_puzzlesettings = {
 		image: images, // needed
 		holder_div: ".PlayGround", // needed
@@ -47,7 +50,9 @@ get_img_puzzlesettings = {
 		difficulty: "regular", // optional
 		shuffle_delay: 3000, // optional
 		shuffle_integer: 50, // optional
-		elem_shadow: true // optional
+		elem_shadow: true, // optional
+		on_shuffle: false, // optional
+		until_shuffle: false // optional
 		}); 
 ```
 
