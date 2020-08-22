@@ -17,7 +17,7 @@ function get_img_puzzle(settings) {
 	let shuffle_int = settings.shuffle_integer || 50;
 	let box_shadow = settings.elem_shadow;
 	let on_shuffle = settings.on_shuffle || false;
-	let until_shuffle = settings.until_shuffle;
+	let until_shuffle = settings.until_shuffle || false;
 
 
 	// error messages
