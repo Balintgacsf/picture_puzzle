@@ -28,7 +28,7 @@ function get_img_puzzle(settings) {
 		if(typeof div_holder !== "string")
 		throw "div_holder expecting to be a string, "+typeof div_holder+" given";
 
-		if(typeof win_function !== "function")
+		if(typeof win_function !== "function" && typeof win_function !== "undefined")
 		throw "after_win expecting to be a function, "+typeof win_function+" given";
 
 		if(typeof shuffle_delay !== "number")
@@ -55,6 +55,20 @@ function get_img_puzzle(settings) {
 	catch(err) {
 		console.error("get_img_puzzle : "+err);
 		return;
+	}
+
+	// creating win_function (make sure that the user wont use this name)
+	function __$won__(results) {
+		let moves = results.moves;
+		let f_minutes = results.time_formatted.minutes;
+		let f_seconds = results.time_formatted.seconds;
+		let difficulty = results.played_difficulty;
+		alert("You win! You did it in "+moves+" moves and "+f_minutes+" minute(s) and "+f_seconds+" seconds. The difficulty was "+ difficulty);
+	}
+
+	// adding default value to win_function
+	if(typeof win_function === "undefined") {
+		win_function = __$won__;
 	}
 
 	// setting box_shadow to true if undefined
@@ -107,8 +121,8 @@ function get_img_puzzle(settings) {
 		}
 		
 		// empty the main holder div and if there are ".bg-elem"-s then remove their the eventListenres too
-		if(document.querySelectorAll(".bg-elem")) {
-			let element = document.querySelectorAll(".bg-elem");
+		if(document.querySelectorAll(div_holder+" .bg-elem")) {
+			let element = document.querySelectorAll(div_holder+" .bg-elem");
 			for(let i = 0; i < element.length; i++) {
 				element[i].removeEventListener("touchstart", event_function);
 				element[i].removeEventListener("mousedown", event_function);
@@ -278,9 +292,15 @@ function get_img_puzzle(settings) {
 					all_elem[i].style.transition = "all 0.3s";
 				}
 
+				// get window height and width without the scrollbar
+				let winWidth = document.documentElement.clientWidth || document.body.clientWidth;
+				let winHeight = document.documentElement.clientHeight || document.body.clientHeight;
+
+				// counting the holder div's position
 				let holder_pos = document.querySelector(div_holder).getBoundingClientRect();
-				let left = window.innerWidth - holder_pos.right;
-				let top = window.innerHeight - holder_pos.bottom;
+				let left = winWidth - holder_pos.right;
+				let top = winHeight - holder_pos.bottom;
+
 				let mouse_pos = [];
 				let x,y;
 
@@ -288,7 +308,7 @@ function get_img_puzzle(settings) {
 				if(event.type === "mouseup") {
 					x = event.clientX;
 					y = event.clientY;
-					mouse_pos.push(x-left, y);
+					mouse_pos.push(x-left, y+top);
 				}
 				// TOUCH
 				if(event.type === "touchend") {
@@ -307,7 +327,7 @@ function get_img_puzzle(settings) {
 						continue;
 					}
 					// if the mouse or the finger is in the area of an other element
-					if(mouse_pos[0] > all_elem[i].offsetLeft && mouse_pos[0] < all_elem[i].offsetLeft+all_elem[i].offsetWidth && mouse_pos[1] > all_elem[i].offsetTop && mouse_pos[1] < all_elem[i].offsetTop+all_elem[i].offsetHeight) {
+					if(mouse_pos[0] > all_elem[i].offsetLeft && mouse_pos[0] < all_elem[i].offsetLeft+element_width && mouse_pos[1] > all_elem[i].offsetTop && mouse_pos[1] < all_elem[i].offsetTop+element_height) {
 						shuffle_elem(event.target,all_elem[i]);
 						mov++;
 						break;
@@ -327,6 +347,7 @@ function get_img_puzzle(settings) {
 			
 			// MOUSELEAVE
 			if(event.type === "mouseleave") {
+				// if the mouse leaves the element, drop the element back to its original position
 				event.target.removeEventListener('mouseleave', event_function);
 				event.target.style.top = original_pos[0]+'px';
 				event.target.style.left  = original_pos[1]+'px';
@@ -400,7 +421,7 @@ function get_img_puzzle(settings) {
 				played_difficulty: difficulty
 			};
 
-			// passing the element array
+			// passing the results and the element array
 			win_function(results, element);
 
 			// removing the box-shadow of all elements
