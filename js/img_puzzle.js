@@ -23,34 +23,38 @@ function get_img_puzzle(settings) {
 	// error messages
 	try{
 		if(typeof images !== "string" && (!Array.isArray(images)))
-		throw "images expecting to be a string or an array, "+typeof images+" given";
+			throw "images expecting to be a string or an array, "+typeof images+" given";
 
 		if(typeof div_holder !== "string")
-		throw "div_holder expecting to be a string, "+typeof div_holder+" given";
+			throw "div_holder expecting to be a string, "+typeof div_holder+" given";
 
 		if(typeof win_function !== "function" && typeof win_function !== "undefined")
-		throw "after_win expecting to be a function, "+typeof win_function+" given";
+			throw "after_win expecting to be a function, "+typeof win_function+" given";
 
 		if(typeof shuffle_delay !== "number")
-		throw "shuffle_delay expecting to be a number, "+typeof shuffle_delay+" given";
+			throw "shuffle_delay expecting to be a number, "+typeof shuffle_delay+" given";
 
 		if(typeof shuffle_int !== "number")
-		throw "shuffle_integer expecting to be a number, "+typeof shuffle_int+" given";
+			throw "shuffle_integer expecting to be a number, "+typeof shuffle_int+" given";
 
 		if(typeof box_shadow !== "boolean" && typeof box_shadow !== "undefined")
-		throw "elem_shadow expecting to be a boolean, "+typeof box_shadow+" given";
+			throw "elem_shadow expecting to be a boolean, "+typeof box_shadow+" given";
 
 		if(typeof difficulty !== "string")
-		throw "difficulty expecting to be a string, "+typeof difficulty+" given";
+			throw "difficulty expecting to be a string, "+typeof difficulty+" given";
 
 		if(difficulty !== "regular" && difficulty !== "hard")
-		throw "difficulty can be regular or hard";
+			throw "difficulty can be regular or hard";
 
 		if(on_shuffle !== "function" && on_shuffle === "boolean")
-		throw "on_shuffle expecting to be a function, "+ typeof on_shuffle+ " given";
+			throw "on_shuffle expecting to be a function, "+ typeof on_shuffle+ " given";
 
 		if(until_shuffle !== "function" && until_shuffle === "boolean")
-		throw "until_shuffle expecting to be a function, "+ typeof until_shuffle+ " given";
+			throw "until_shuffle expecting to be a function, "+ typeof until_shuffle+ " given";
+
+		// checking if the main holder div's height and width has been set
+		if(document.querySelector(div_holder).offsetHeight == 0 || document.querySelector(div_holder).offsetWidth == 0)
+			throw "The main holder's ( "+div_holder+" ) width or height has been set to 0. It cannot be seen.";
 	}
 	catch(err) {
 		console.error("get_img_puzzle : "+err);
@@ -101,12 +105,14 @@ function get_img_puzzle(settings) {
 		return;
 	}
 
+	let game_holder = "";
+
 	img.onload = function() {
 		let original_sequence = "", sequence = "";
 		let imgwidth = img.width;
 		let imgheight = img.height;
-		let winheight = window.innerHeight;
-		let winwidth = window.innerWidth;
+		let winheight = document.querySelector(div_holder).offsetHeight;
+		let winwidth = document.querySelector(div_holder).offsetWidth;
 		let ratio = Math.min(winwidth / imgwidth, winheight / imgheight);
 		let new_width = 0, new_height = 0;
 		if(difficulty === "regular") {
@@ -121,8 +127,8 @@ function get_img_puzzle(settings) {
 		}
 		
 		// empty the main holder div and if there are ".bg-elem"-s then remove their the eventListenres too
-		if(document.querySelectorAll(div_holder+" .bg-elem")) {
-			let element = document.querySelectorAll(div_holder+" .bg-elem");
+		if(document.querySelectorAll(div_holder+" ._game_output .bg-elem")) {
+			let element = document.querySelectorAll(div_holder+" ._game_output .bg-elem");
 			for(let i = 0; i < element.length; i++) {
 				element[i].removeEventListener("touchstart", event_function);
 				element[i].removeEventListener("mousedown", event_function);
@@ -142,6 +148,12 @@ function get_img_puzzle(settings) {
 
 		// update the holder div
 		get_img_puzzle.holder = div_holder;
+
+		// creating game holder div
+		let gameHolder = document.createElement("DIV");
+		gameHolder.classList.add("_game_output");
+		document.querySelector(div_holder).appendChild(gameHolder);
+		game_holder = document.querySelector("._game_output");
 		
 		// setting how many elemnt going to be created depends on the difficulty
 		let elem_piece = 0;
@@ -154,15 +166,16 @@ function get_img_puzzle(settings) {
 		// Adding pieces to html
 		// and adding data attributes to them. The data-piece is always the same, but the data-sequence will be changed
 		for (let i = 0; i <= elem_piece; i++) {
-			main_holder.innerHTML += "<div data-piece='"+i+"' data-sequence="+i+" class='bg-elem'></div>\n";
+			game_holder.innerHTML += "<div data-piece='"+i+"' data-sequence="+i+" class='bg-elem'></div>\n";
 		}
+
+		game_holder.style.position = "absolute";
+		game_holder.style.width = new_width+'px';
+		game_holder.style.height = new_height+'px';
+		game_holder.style.left = "50%";
+		game_holder.style.marginLeft = -new_width/2+'px';
 		
-		main_holder.style.width = new_width+'px';
-		main_holder.style.height = new_height+'px';
-		main_holder.style.left = "50%";
-		main_holder.style.marginLeft = -new_width/2+'px';
-		
-		let element = document.querySelectorAll(div_holder+" .bg-elem");
+		let element = document.querySelectorAll(div_holder+" ._game_output .bg-elem");
 		
 		// creating a string with the original sequence of elements
 		// we will check this string for get know did we win
@@ -233,7 +246,7 @@ function get_img_puzzle(settings) {
 		// creating the overlay element and setting the css
 		let overlayCreate = document.createElement("DIV");
 		overlayCreate.classList.add("overlay_div");
-		document.querySelector(div_holder).appendChild(overlayCreate);
+		game_holder.appendChild(overlayCreate);
 		let overlay = document.querySelector(".overlay_div");
 		overlay.setAttribute("style",
 		"position: relative;"+
@@ -266,7 +279,7 @@ function get_img_puzzle(settings) {
 				return;
 			}
 
-			let all_elem = document.querySelectorAll(div_holder+" ."+event.target.classList);
+			let all_elem = document.querySelectorAll(div_holder+" ._game_output ."+event.target.classList);
 
 			// MOUSEDOWN AND TOUCHSTART
 			if(event.type === "mousedown" || event.type === "touchstart") {
@@ -292,14 +305,10 @@ function get_img_puzzle(settings) {
 					all_elem[i].style.transition = "all 0.3s";
 				}
 
-				// get window height and width without the scrollbar
-				let winWidth = document.documentElement.clientWidth || document.body.clientWidth;
-				let winHeight = document.documentElement.clientHeight || document.body.clientHeight;
-
-				// counting the holder div's position
-				let holder_pos = document.querySelector(div_holder).getBoundingClientRect();
-				let left = winWidth - holder_pos.right;
-				let top = winHeight - holder_pos.bottom;
+				// get the game's position
+				let holder_pos = game_holder.getBoundingClientRect();
+				let left = holder_pos.left;
+				let top = holder_pos.top;
 
 				let mouse_pos = [];
 				let x,y;
@@ -308,12 +317,10 @@ function get_img_puzzle(settings) {
 				if(event.type === "mouseup") {
 					x = event.clientX;
 					y = event.clientY;
-					mouse_pos.push(x-left, y+top);
+					mouse_pos.push(x-left, y-top);
 				}
 				// TOUCH
 				if(event.type === "touchend") {
-					top = holder_pos.top;
-					left = holder_pos.left;
 					x = event.changedTouches[0].clientX;
 					y = event.changedTouches[0].clientY;
 					mouse_pos.push(x-left, y-top);
@@ -441,7 +448,7 @@ function get_img_puzzle(settings) {
 			if(until_shuffle) {
 				until_shuffle();
 			}
-			let random_elem = document.querySelectorAll(div_holder+" .bg-elem");
+			let random_elem = document.querySelectorAll(div_holder+" ._game_output .bg-elem");
 			for(let i = 0; i < shuffle_int; i++) {
 				let random_num = Math.floor(Math.random() * random_elem.length);
 				let random_num2 = Math.floor(Math.random() * random_elem.length);
@@ -496,7 +503,7 @@ function get_img_puzzle(settings) {
 							check_playable = true;
 							if(box_shadow === true) {
 								for(let i = 0; i < element.length; i++) {
-									element[i].style.boxShadow = "inset 1px 1px 3px #ccc";
+									element[i].style.boxShadow = "inset 5px 5px 8px #ccc";
 								}
 							}
 							draggable_elements(element); // Enabling draggable
@@ -563,7 +570,7 @@ function get_img_puzzle(settings) {
 					this.removeEventListener('mousemove', dragIt);
 				});
 				
-				document.querySelector(div_holder).addEventListener('mouseup', function() {
+				game_holder.addEventListener('mouseup', function() {
 					drg_elem[i].removeEventListener('mousemove', dragIt);
 				});
 			
@@ -583,7 +590,7 @@ function get_img_puzzle(settings) {
 				
 				this.addEventListener('touchmove', swipeIt);
 				
-				document.querySelector(div_holder).addEventListener('touchend', function(e) {
+				game_holder.addEventListener('touchend', function(e) {
 					e.preventDefault();
 					drg_elem[i].removeEventListener('touchmove', swipeIt);
 				});
