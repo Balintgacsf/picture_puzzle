@@ -22,7 +22,7 @@ In the body just add one div with class you choose. In this example we are gonna
 ```
 ### Javascript
 
-You have to pass the ```settings``` object to the function with the image(s), the main holder div's selector where the game will be placed and a function which will run when the player wins.
+You have to pass the ```settings``` object to the function with the image(s), the main holder div's selector where the game will be placed.
 If you want, you can create an array with the paths of the images what you want to shuffle and pass it to the function. The function will select random image from the array each time you call the function.
 
 ```javascript
@@ -35,18 +35,17 @@ let images = [
 	
 get_img_puzzle(settings = {
 		image: images,
-		holder_div: ".PlayGround",
-		after_win: won
+		holder_div: ".PlayGround"
 		});
 ```
 
-The ``` get_img_puzzle() ``` function is waiting for three arguments in the settings object. The other six is optional: 
+The ``` get_img_puzzle() ``` function is waiting for two arguments in the settings object. The other seven is optional: 
 ```javascript
 // here are listed the parameters and the default values of the settings
 get_img_puzzlesettings = {
 		image: images, // needed
 		holder_div: ".PlayGround", // needed
-		after_win: won, // needed
+		after_win: won, // optional
 		difficulty: "regular", // optional
 		shuffle_delay: 3000, // optional
 		shuffle_integer: 50, // optional
@@ -60,7 +59,7 @@ get_img_puzzlesettings = {
 
 **holder_div**: ``` string ``` the selector of the main holder div where the image will be displayed.
 
-**after_win**: ``` function ``` the function which will run when the player wins. Remember to **not** to invoke the function so do not put the ```()```.
+**after_win**: ``` function ``` the function which will run when the player wins. Remember to **not** to invoke the function so do not put the ```()```. The default function will alert the user, with the statics of the play.
 
 **difficulty**: ``` string ``` the difficulty of the game. Can be **regular** which means 14 pieces in 2 rows or **hard** which means 21 pieces in 3 rows.
 
@@ -115,14 +114,8 @@ The **Results object** returns:
 
 get_img_puzzle(settings = {
 		image: "https://i.ibb.co/cTDp6mh/hatter6.jpg",
-		holder_div: ".PlayGround",
-		after_win: won
+		holder_div: ".PlayGround"
 	});
-
-// Function that runs after win
-function won() {
-    alert("you win");
-}
 ```
 
 **Calling the function with an array of image sources**
@@ -143,16 +136,10 @@ let images = [
 get_img_puzzle(settings = {
 		image: images,
 		holder_div: ".PlayGround",
-		after_win: won,
 		difficulty: "hard",
 		shuffle_delay: 1000,
 		shuffle_integer: 10
 		});
-
-// Function that runs after win
-function won() {
-    alert("you win");
-}
 ```
 **Working with statics of the play when the user wins**
 ```javascript
@@ -165,8 +152,8 @@ let images = [
 	];
 	
 	// passing this function to run when the player wins
-	// note that the function is waiting for two arguments: results and element
-	function won(results, element) {
+	// note that the function is waiting for the argument: results
+	function won(results) {
 		let moves = results.moves;
 		// the time_formatted is an object and it has two values: minutes and the rest of the seconds
 		let f_minutes = results.time_formatted.minutes;
@@ -175,10 +162,6 @@ let images = [
 		
 		// output the personalized message
 		console.log("You win! You did it in "+moves+" moves and "+f_minutes+" minute(s) and "+f_seconds+" seconds. The difficulty was "+ difficulty);
-		// removing the box-shadow of all elements
-		for(let i = 0; i < element.length; i++ ) {
-			element[i].style.boxShadow = "inset 0px 0px 0px #ccc";
-		}
 	}
 	
 	// setting up the puzzle
@@ -198,11 +181,6 @@ let images = [
 	"https://i.ibb.co/mhhKxP5/hatter3.jpg"
 	];
 
-// afer the player wins
-function won() {
-	alert("You win!");
-}
-
 // this function will run when the image is loaded and the swapping has begun
 function started() {
 	console.log("Started to swap the elements");
@@ -213,7 +191,6 @@ function started() {
 	get_img_puzzle({
 		image: images,
 		holder_div: ".PlayGround",
-		after_win: won,
 		on_shuffle: started
 	});
 ```
@@ -226,11 +203,6 @@ let images = [
 	"https://i.ibb.co/1MkR9LN/hatter4.jpg",
 	"https://i.ibb.co/mhhKxP5/hatter3.jpg"
 	];
-
-// afer the player wins
-function won() {
-	alert("You win!");
-}
 
 // this function will be passed to the until_shuffle
 // the function will run two times:
@@ -252,6 +224,5 @@ function isShuffle(state) {
 	get_img_puzzle({
 		image: images,
 		holder_div: ".PlayGround",
-		after_win: won,
 		until_shuffle: isShuffle
 	});
