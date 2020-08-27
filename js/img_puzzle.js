@@ -18,6 +18,7 @@ function get_img_puzzle(settings) {
 	let box_shadow = settings.elem_shadow;
 	let on_shuffle = settings.on_shuffle || false;
 	let until_shuffle = settings.until_shuffle || false;
+	let is_shuffle_animation = settings.is_shuffle_animation || false;
 
 
 	// error messages
@@ -51,6 +52,9 @@ function get_img_puzzle(settings) {
 
 		if(until_shuffle !== "function" && until_shuffle === "boolean")
 			throw "until_shuffle expecting to be a function, "+ typeof until_shuffle+ " given";
+
+		if(typeof is_shuffle_animation !== "boolean")
+			throw "is_shuffle_animation expecting to be a boolean, "+typeof is_shuffle_animation+" given";
 
 		// checking if the main holder div's height and width has been set
 		if(document.querySelector(div_holder).offsetHeight == 0 || document.querySelector(div_holder).offsetWidth == 0)
@@ -243,23 +247,26 @@ function get_img_puzzle(settings) {
 			}
 		}
 
-		// creating the overlay element and setting the css
-		let overlayCreate = document.createElement("DIV");
-		overlayCreate.classList.add("overlay_div");
-		game_holder.appendChild(overlayCreate);
-		let overlay = document.querySelector(".overlay_div");
-		overlay.setAttribute("style",
-		"position: relative;"+
-		"width: 100%;"+
-		"height: 100%;"+
-		"left: 0px;"+
-		"top: 0px;"+
-		"background-image: url(\'"+img.src+"\');"+
-		"background-size: "+new_width+"px "+new_height+"px;"+
-		"background-position: -"+overlay.offsetLeft+"px "+"-"+overlay.offsetTop+"px;"+
-		"z-index: 999;"+
-		"transition: all .3s linear;"
-		);
+		let overlay = "";
+		if(is_shuffle_animation === true) {
+			// creating the overlay element and setting the css
+			let overlayCreate = document.createElement("DIV");
+			overlayCreate.classList.add("overlay_div");
+			game_holder.appendChild(overlayCreate);
+			overlay = document.querySelector(".overlay_div");
+			overlay.setAttribute("style",
+			"position: relative;"+
+			"width: 100%;"+
+			"height: 100%;"+
+			"left: 0px;"+
+			"top: 0px;"+
+			"background-image: url(\'"+img.src+"\');"+
+			"background-size: "+new_width+"px "+new_height+"px;"+
+			"background-position: -"+overlay.offsetLeft+"px "+"-"+overlay.offsetTop+"px;"+
+			"z-index: 999;"+
+			"transition: all .3s linear;"
+			);
+		}
 		
 		let original_pos = [];
 		
@@ -457,7 +464,17 @@ function get_img_puzzle(settings) {
 				shuffle_elem(random_elem[random_num],random_elem[random_num2]);
 				// the shuffle is finsihed
 				if(i == shuffle_int-1) {
-					animate_shuffle();
+					if(is_shuffle_animation === true) {
+						animate_shuffle();
+					} else {
+						check_playable = true;
+						if(box_shadow === true) {
+							for(let i = 0; i < element.length; i++) {
+								element[i].style.boxShadow = "inset 1px 1px 3px #ccc";
+							}
+						}
+						draggable_elements(element); // Enabling draggable
+					}
 				}
 			}
 		}
@@ -503,7 +520,7 @@ function get_img_puzzle(settings) {
 							check_playable = true;
 							if(box_shadow === true) {
 								for(let i = 0; i < element.length; i++) {
-									element[i].style.boxShadow = "inset 5px 5px 8px #ccc";
+									element[i].style.boxShadow = "inset 1px 1px 3px #ccc";
 								}
 							}
 							draggable_elements(element); // Enabling draggable
