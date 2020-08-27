@@ -39,7 +39,7 @@ get_img_puzzle(settings = {
 		});
 ```
 
-The ``` get_img_puzzle() ``` function is waiting for two arguments in the settings object. The other seven is optional: 
+The ``` get_img_puzzle() ``` function is waiting for two arguments in the settings object. The other eight is optional: 
 ```javascript
 // here are listed the parameters and the default values of the settings
 get_img_puzzlesettings = {
@@ -51,7 +51,8 @@ get_img_puzzlesettings = {
 		shuffle_integer: 50, // optional
 		elem_shadow: true, // optional
 		on_shuffle: false, // optional
-		until_shuffle: false // optional
+		until_shuffle: false, // optional
+		is_shuffle_animation: false // optional
 		}); 
 ```
 
@@ -67,15 +68,19 @@ get_img_puzzlesettings = {
 
 **shuffle_integer**: ``` number ``` Every shuffle swaps two elements positions. You can set how many shuffle you want. (50 by Default)
 
-**elem_shadow**: ```boolean``` Control the box-shadow on all element (```inset 1px 1px 3px #ccc```). True by default.
+**elem_shadow**: ``` boolean ``` Control the box-shadow on all element (```inset 1px 1px 3px #ccc```). True by default.
 
-**on_shuffle**: ```function``` the function which will run when the image is loaded and the shuffle function started to swap the elements.
+**on_shuffle**: ``` function ``` the function which will run when the image is loaded and the shuffle function started to swap the elements.
 
-**until_shuffle**: ```function``` the function which will run two times:
+**until_shuffle**: ``` function ``` the function which will run two times:
 
 - First time when the image is loaded and the shuffle function started to swap the elements.
 - Second time when the shuffle is done (including animations), but this time your function will get an argument (a ```true```)
 [See the examples](https://github.com/Balintgacsf/picture_puzzle#examples)
+
+**is_shuffle_animation**: ```boolean``` You can activate an animation for the mixing (false by default):
+
+![Gif](https://i.ibb.co/YcpPPXV/demo-gif.gif)
 
 
 ### After win
