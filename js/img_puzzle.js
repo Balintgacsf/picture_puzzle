@@ -29,6 +29,9 @@ function get_img_puzzle(settings) {
 
 		if(typeof div_holder !== "string")
 			throw "div_holder expecting to be a string, "+typeof div_holder+" given";
+		
+		if(!document.querySelector(div_holder))
+			throw "div_holder ( "+div_holder+" ) cannot be found.";
 
 		if(typeof win_function !== "function" && typeof win_function !== "undefined")
 			throw "after_win expecting to be a function, "+typeof win_function+" given";
