@@ -233,3 +233,29 @@ function isShuffle(state) {
 		holder_div: ".PlayGround",
 		until_shuffle: isShuffle
 	});
+```
+**Get the image's source when you called the function with an array of image sources**
+```javascript
+// array of images
+let images = [
+	"https://i.ibb.co/VBNcJBr/hatter7.jpg",
+	"https://i.ibb.co/dL0rjZb/hatter5.jpg",
+	"https://i.ibb.co/1MkR9LN/hatter4.jpg",
+	"https://i.ibb.co/mhhKxP5/hatter3.jpg"
+	];
+	
+	// this function is waiting for the image's source
+	// by passing it to the get_img_puzzle will run this function and
+	// when the image is loaded, this function will be called with the src parameter
+	function img_for_help(src) {
+		console.log(src);
+	}
+	
+	// calling the get_img_puzzle and telling that we will need the current image's source
+	// so we pass our function to the get_img key
+	get_img_puzzle({
+		image: images,
+		holder_div: ".PlayGround",
+		get_img: img_for_help
+	});
+```
