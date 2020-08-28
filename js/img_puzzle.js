@@ -275,7 +275,7 @@ function get_img_puzzle(settings) {
 			"background-image: url(\'"+img.src+"\');"+
 			"background-size: "+new_width+"px "+new_height+"px;"+
 			"background-position: -"+overlay.offsetLeft+"px "+"-"+overlay.offsetTop+"px;"+
-			"z-index: 999;"+
+			"z-index: 3;"+
 			"transition: all .3s linear;"
 			);
 		}
