@@ -310,7 +310,7 @@ function get_img_puzzle(settings) {
 				}
 				original_pos.push(event.target.offsetTop);
 				original_pos.push(event.target.offsetLeft);
-				event.target.style.zIndex = "999";
+				event.target.style.zIndex = "2";
 				// starting the timer on first move
 				if(mov === 0) {
 					time = new Date();
