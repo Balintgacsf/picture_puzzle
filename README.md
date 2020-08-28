@@ -64,6 +64,8 @@ get_img_puzzlesettings = {
 
 **difficulty**: ``` string ``` the difficulty of the game. Can be **regular** which means 14 pieces in 2 rows or **hard** which means 21 pieces in 3 rows.
 
+**get_img**: ``` function ``` the function which will get it's parameter the current image source. It is useful if the images was passed in by an array, and the function randomly chosen one image.
+
 **shuffle_delay**: ``` number ``` The time in miliseconds to wait before shuffleing the image. (3000 by Default).
 
 **shuffle_integer**: ``` number ``` Every shuffle swaps two elements positions. You can set how many shuffle you want. (50 by Default)

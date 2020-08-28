@@ -19,6 +19,7 @@ function get_img_puzzle(settings) {
 	let on_shuffle = settings.on_shuffle || false;
 	let until_shuffle = settings.until_shuffle || false;
 	let is_shuffle_animation = settings.is_shuffle_animation || false;
+	let get_img = settings.get_img;
 
 
 	// error messages
@@ -55,6 +56,9 @@ function get_img_puzzle(settings) {
 
 		if(typeof is_shuffle_animation !== "boolean")
 			throw "is_shuffle_animation expecting to be a boolean, "+typeof is_shuffle_animation+" given";
+
+		if(typeof get_img !== "function" && typeof get_img !== "undefined")
+			throw "get_img expecting to be a function, "+typeof get_img+" given";
 
 		// checking if the main holder div's height and width has been set
 		if(document.querySelector(div_holder).offsetHeight == 0 || document.querySelector(div_holder).offsetWidth == 0)
@@ -112,6 +116,11 @@ function get_img_puzzle(settings) {
 	let game_holder = "";
 
 	img.onload = function() {
+
+		// if the image has loaded and if needed give back image's src to the get_img function
+		if(get_img) {
+			get_img(img.src);
+		}
 		let original_sequence = "", sequence = "";
 		let imgwidth = img.width;
 		let imgheight = img.height;
