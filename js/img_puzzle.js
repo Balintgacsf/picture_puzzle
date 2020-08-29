@@ -48,8 +48,8 @@ function get_img_puzzle(settings) {
 		if(typeof difficulty !== "string")
 			throw "difficulty expecting to be a string, "+typeof difficulty+" given";
 
-		if(difficulty !== "normal" && difficulty !== "hard" && difficulty !== "nightmare")
-			throw "difficulty can be normal, hard or nightmare";
+		if(difficulty !== "easy" && difficulty !== "normal" && difficulty !== "hard" && difficulty !== "nightmare")
+			throw "difficulty can be easy, normal, hard or nightmare";
 
 		if(on_shuffle !== "function" && on_shuffle === "boolean")
 			throw "on_shuffle expecting to be a function, "+ typeof on_shuffle+ " given";
@@ -128,20 +128,41 @@ function get_img_puzzle(settings) {
 		let winwidth = document.querySelector(div_holder).offsetWidth;
 		let ratio = Math.min(winwidth / imgwidth, winheight / imgheight);
 		let new_width = 0, new_height = 0;
-		if(difficulty === "normal") {
+		let columns = 0, rows = 0;
+
+		let elem_piece = 0;
+		function getSizes(column, row) {
 			// divide new_height and new_width with the number of pieces before using them
-			// when you use it, it will give back a round pixel number
-			new_width = Math.round(imgwidth * ratio / 7)*7;
-			new_height = Math.round(imgheight * ratio / 2)*2;
+			// when use it, it will give back a round pixel number
+			new_width = Math.round(imgwidth * ratio / column)*column;
+			new_height = Math.round(imgheight * ratio / row)*row;
+
+			// setting how many elemnt going to be created depends on the difficulty
+			elem_piece = column * row - 1;
+
+			// setting elements height and width
+			element_height = new_height / row;
+			element_width = new_width / column;
+		}
+
+		if(difficulty === "easy") {
+			columns = 5;
+			rows = 2;
+		}
+		if(difficulty === "normal") {
+			columns = 7;
+			rows = 2;
 		}
 		if(difficulty === "hard") {
-			new_width = Math.round(imgwidth * ratio / 7)*7;
-			new_height = Math.round(imgheight * ratio / 3)*3;
+			columns = 7;
+			rows = 3;
 		}
 		if(difficulty === "nightmare") {
-			new_width = Math.round(imgwidth * ratio / 8)*8;
-			new_height = Math.round(imgheight * ratio / 4)*4;
+			columns = 8;
+			rows = 4;
 		}
+
+		getSizes(columns,rows);
 		
 		// empty the main holder div and if there are ".bg-elem"-s then remove their the eventListenres too
 		if(document.querySelectorAll(div_holder+" ._game_output .bg-elem")) {
@@ -173,17 +194,6 @@ function get_img_puzzle(settings) {
 		game_holder = document.querySelector("._game_output");
 		game_holder.style.overflow = "hidden";
 		
-		// setting how many elemnt going to be created depends on the difficulty
-		let elem_piece = 0;
-		if(difficulty === "normal") {
-			elem_piece = 13;
-		}
-		if(difficulty === "hard") {
-			elem_piece = 20;
-		}
-		if(difficulty === "nightmare") {
-			elem_piece = 31;
-		}
 		// Adding pieces to html
 		// and adding data attributes to them. The data-piece is always the same, but the data-sequence will be changed
 		for (let i = 0; i <= elem_piece; i++) {
@@ -198,100 +208,45 @@ function get_img_puzzle(settings) {
 		
 		let element = document.querySelectorAll(div_holder+" ._game_output .bg-elem");
 		
-		// creating a string with the original sequence of elements
-		// we will check this string for get know did we win
+		// setting elemnts positions and background positions
+		//let piece = 0;
+		let row = 0;
+		let column = 0;
 		for (let i = 0; i < element.length; i++) {
+
+			// creating a string with the original sequence of elements
+			// in the end the function check this string for get know did we win
 			let elem_data = element[i].getAttribute('data-sequence');
 			original_sequence = original_sequence + elem_data;
-		}
-		
-		// setting background and setting elements height and width
-		for(let i = 0; i < element.length; i++) {
+
 			element[i].style.position = "absolute";
+			// setting background image and size
 			element[i].style.backgroundImage = "url('"+img.src+"')";
 			element[i].style.backgroundSize = new_width+'px '+new_height+'px';
-			if(difficulty === "normal") {
-				element_height = new_height/2;
-				element_width = new_width/7;
-			}
-			if(difficulty === "hard") {
-				element_height = new_height/3;
-				element_width = new_width/7;
-			}
-			if(difficulty === "nightmare") {
-				element_height = new_height/4;
-				element_width = new_width/8;
-			}
+
+			// setting new height and width
 			element[i].style.height = element_height+'px';
 			element[i].style.width = element_width+'px';
-		}
-		
-		// setting elemnts positions and background positions
-		let piece = 0;
-		for (let i = 0; i < element.length; i++) {
-			element[i].style.left = element_width*piece+'px';
-			// NORMAL
-			if(difficulty === "normal") {
-				// fisrt row
-				if (i <= 6) {
-					element[i].style.top = '0px';
-				}
-				// second row
-				if (i > 6) {
-					element[i].style.top = element_height+'px';
-				}
+
+			// positioning
+			element[i].style.left = element_width*column+'px';
+
+			if(row === 0) {
+				element[i].style.top = '0px';
+				column++;
+			} else {
+				element[i].style.top = element_height*row+'px';
+				column++;
 			}
-			// HARD
-			if(difficulty === "hard") {
-				// fisrt row
-				if (i <= 6) {
-					element[i].style.top = '0px';
-				}
-				// second row
-				if (i > 6 && i < 14) {
-					element[i].style.top = element_height+'px';
-				}
-				// third row
-				if (i >= 14) {
-					element[i].style.top = element_height+element_height+'px';
-				}
-			}
-			// NIGHTMARE
-			if(difficulty === "nightmare") {
-				// fisrt row
-				if (i <= 7) {
-					element[i].style.top = '0px';
-				}
-				// second row
-				if (i > 7 && i < 16) {
-					element[i].style.top = element_height+'px';
-				}
-				// third row
-				if (i >= 16 && i < 24) {
-					element[i].style.top = element_height+element_height+'px';
-				}
-				// fourth row
-				if (i >= 24) {
-					element[i].style.top = element_height+element_height*2+'px';
-				}
+			if(column === columns) {
+				column = 0;
+				row++;
 			}
 
 			// setting background-position of each element
 			let leftPos = element[i].offsetLeft;
 			let topPos = element[i].offsetTop;
 			element[i].style.backgroundPosition = -leftPos+'px '+ -topPos+'px';
-
-			// counting pieces
-			piece++;
-			if(difficulty === "nightmare") {
-				if (piece === 8) {
-					piece = 0;
-				}
-			} else {
-				if (piece === 7) {
-					piece = 0;
-				}
-			}
 		}
 
 		let overlay = "";
