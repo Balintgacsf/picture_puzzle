@@ -46,7 +46,7 @@ get_img_puzzlesettings = {
 		image: images, // needed
 		holder_div: ".PlayGround", // needed
 		after_win: won, // optional
-		difficulty: "regular", // optional
+		difficulty: "normal", // optional
 		shuffle_delay: 3000, // optional
 		shuffle_integer: 50, // optional
 		elem_shadow: true, // optional
@@ -62,7 +62,7 @@ get_img_puzzlesettings = {
 
 **after_win**: ``` function ``` the function which will run when the player wins. Remember to **not** to invoke the function so do not put the ```()```. The default function will alert the user, with the statics of the play.
 
-**difficulty**: ``` string ``` the difficulty of the game. Can be **regular** which means 14 pieces in 2 rows or **hard** which means 21 pieces in 3 rows.
+**difficulty**: ``` string ``` the difficulty of the game. Can be **normal** which means 14 pieces in 2 rows or **hard** which means 21 pieces in 3 rows.
 
 **get_img**: ``` function ``` the function which will get it's parameter the current image source. It is useful if the images was passed in by an array, and the function randomly chosen one image.
 
@@ -107,7 +107,7 @@ The **Results object** returns:
 
 **total_shuffle**: The number of the elements that has been swapped before the game.
 
-**played_difficulty**: The difficulty that the user played. Can be **regular** or **hard**.
+**played_difficulty**: The difficulty that the user played. Can be **normal** or **hard**.
 
 [Demo Here](https://codepen.io/Balint_Gacsfalvy/pen/rNxYQog)
 

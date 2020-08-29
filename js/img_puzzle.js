@@ -12,7 +12,7 @@ function get_img_puzzle(settings) {
 	let images = settings.image;
 	let div_holder = settings.holder_div;
 	let win_function = settings.after_win;
-	let difficulty = settings.difficulty || "regular";
+	let difficulty = settings.difficulty || "normal";
 	let shuffle_delay = settings.shuffle_delay || 3000;
 	let shuffle_int = settings.shuffle_integer || 50;
 	let box_shadow = settings.elem_shadow;
@@ -48,8 +48,8 @@ function get_img_puzzle(settings) {
 		if(typeof difficulty !== "string")
 			throw "difficulty expecting to be a string, "+typeof difficulty+" given";
 
-		if(difficulty !== "regular" && difficulty !== "hard")
-			throw "difficulty can be regular or hard";
+		if(difficulty !== "normal" && difficulty !== "hard")
+			throw "difficulty can be normal or hard";
 
 		if(on_shuffle !== "function" && on_shuffle === "boolean")
 			throw "on_shuffle expecting to be a function, "+ typeof on_shuffle+ " given";
@@ -131,7 +131,7 @@ function get_img_puzzle(settings) {
 		let winwidth = document.querySelector(div_holder).offsetWidth;
 		let ratio = Math.min(winwidth / imgwidth, winheight / imgheight);
 		let new_width = 0, new_height = 0;
-		if(difficulty === "regular") {
+		if(difficulty === "normal") {
 			// divide new_height and new_width with the number of pieces before using them
 			// when you use it, it will give back a round pixel number
 			new_width = Math.round(imgwidth * ratio / 7)*7;
@@ -173,7 +173,7 @@ function get_img_puzzle(settings) {
 		
 		// setting how many elemnt going to be created depends on the difficulty
 		let elem_piece = 0;
-		if(difficulty === "regular") {
+		if(difficulty === "normal") {
 			elem_piece = 13;
 		}
 		if(difficulty === "hard") {
@@ -207,7 +207,7 @@ function get_img_puzzle(settings) {
 			element[i].style.backgroundSize = new_width+'px '+new_height+'px';
 			element_width = new_width/7;
 			element[i].style.width = element_width+'px';
-			if(difficulty === "regular") {
+			if(difficulty === "normal") {
 				element_height = new_height/2;
 			}
 			if(difficulty === "hard") {
@@ -220,8 +220,8 @@ function get_img_puzzle(settings) {
 		let piece = 0;
 		for (let i = 0; i < element.length; i++) {
 			element[i].style.left = element_width*piece+'px';
-			// REGULAR
-			if(difficulty === "regular") {
+			// NORMAL
+			if(difficulty === "normal") {
 				// fisrt row
 				if (i <= 6) {
 					element[i].style.top = '0px';
