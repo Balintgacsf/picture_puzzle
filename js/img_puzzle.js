@@ -383,11 +383,13 @@ function get_img_puzzle(settings) {
 				}
 
 				// checking all the elements, if our finger or mouse is on them
-				let data_actual_piece = event.target.getAttribute('data-piece');
+				let data_actual_piece = parseInt(event.target.getAttribute('data-piece'));
 				for(let i = 0; i < all_elem.length; i++) {
 					// we have to make sure that our element is not the one we dragging
-					if(i == data_actual_piece) {
-						continue;
+					if(i === data_actual_piece) {
+						if(data_actual_piece !== all_elem.length-1) {
+							continue;
+						}
 					}
 					// if the mouse or the finger is in the area of an other element
 					if(mouse_pos[0] > all_elem[i].offsetLeft && mouse_pos[0] < all_elem[i].offsetLeft+element_width && mouse_pos[1] > all_elem[i].offsetTop && mouse_pos[1] < all_elem[i].offsetTop+element_height) {
