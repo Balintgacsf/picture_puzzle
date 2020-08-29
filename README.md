@@ -62,7 +62,7 @@ get_img_puzzlesettings = {
 
 **after_win**: ``` function ``` the function which will run when the player wins. Remember to **not** to invoke the function so do not put the ```()```. The default function will alert the user, with the statics of the play.
 
-**difficulty**: ``` string ``` the difficulty of the game. Can be **normal** which means 14 pieces in 2 rows or **hard** which means 21 pieces in 3 rows.
+**difficulty**: ``` string ``` the difficulty of the game. Can be **normal** which means 14 pieces in 2 rows or **hard** which means 21 pieces in 3 rows or **nightmare** wich means 32 pices in 4 rows.
 
 **get_img**: ``` function ``` the function which will get it's parameter the current image source. It is useful if the images was passed in by an array, and the function randomly chosen one image.
 

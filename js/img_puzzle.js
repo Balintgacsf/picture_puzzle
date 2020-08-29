@@ -48,8 +48,8 @@ function get_img_puzzle(settings) {
 		if(typeof difficulty !== "string")
 			throw "difficulty expecting to be a string, "+typeof difficulty+" given";
 
-		if(difficulty !== "normal" && difficulty !== "hard")
-			throw "difficulty can be normal or hard";
+		if(difficulty !== "normal" && difficulty !== "hard" && difficulty !== "nightmare")
+			throw "difficulty can be normal, hard or nightmare";
 
 		if(on_shuffle !== "function" && on_shuffle === "boolean")
 			throw "on_shuffle expecting to be a function, "+ typeof on_shuffle+ " given";
@@ -141,6 +141,10 @@ function get_img_puzzle(settings) {
 			new_width = Math.round(imgwidth * ratio / 7)*7;
 			new_height = Math.round(imgheight * ratio / 3)*3;
 		}
+		if(difficulty === "nightmare") {
+			new_width = Math.round(imgwidth * ratio / 8)*8;
+			new_height = Math.round(imgheight * ratio / 4)*4;
+		}
 		
 		// empty the main holder div and if there are ".bg-elem"-s then remove their the eventListenres too
 		if(document.querySelectorAll(div_holder+" ._game_output .bg-elem")) {
@@ -179,6 +183,9 @@ function get_img_puzzle(settings) {
 		if(difficulty === "hard") {
 			elem_piece = 20;
 		}
+		if(difficulty === "nightmare") {
+			elem_piece = 31;
+		}
 		// Adding pieces to html
 		// and adding data attributes to them. The data-piece is always the same, but the data-sequence will be changed
 		for (let i = 0; i <= elem_piece; i++) {
@@ -205,15 +212,20 @@ function get_img_puzzle(settings) {
 			element[i].style.position = "absolute";
 			element[i].style.backgroundImage = "url('"+img.src+"')";
 			element[i].style.backgroundSize = new_width+'px '+new_height+'px';
-			element_width = new_width/7;
-			element[i].style.width = element_width+'px';
 			if(difficulty === "normal") {
 				element_height = new_height/2;
+				element_width = new_width/7;
 			}
 			if(difficulty === "hard") {
 				element_height = new_height/3;
+				element_width = new_width/7;
+			}
+			if(difficulty === "nightmare") {
+				element_height = new_height/4;
+				element_width = new_width/8;
 			}
 			element[i].style.height = element_height+'px';
+			element[i].style.width = element_width+'px';
 		}
 		
 		// setting elemnts positions and background positions
@@ -246,6 +258,25 @@ function get_img_puzzle(settings) {
 					element[i].style.top = element_height+element_height+'px';
 				}
 			}
+			// NIGHTMARE
+			if(difficulty === "nightmare") {
+				// fisrt row
+				if (i <= 7) {
+					element[i].style.top = '0px';
+				}
+				// second row
+				if (i > 7 && i < 16) {
+					element[i].style.top = element_height+'px';
+				}
+				// third row
+				if (i >= 16 && i < 24) {
+					element[i].style.top = element_height+element_height+'px';
+				}
+				// fourth row
+				if (i >= 24) {
+					element[i].style.top = element_height+element_height*2+'px';
+				}
+			}
 
 			// setting background-position of each element
 			let leftPos = element[i].offsetLeft;
@@ -254,8 +285,14 @@ function get_img_puzzle(settings) {
 
 			// counting pieces
 			piece++;
-			if (piece == 7) {
-				piece = 0;
+			if(difficulty === "nightmare") {
+				if (piece === 8) {
+					piece = 0;
+				}
+			} else {
+				if (piece === 7) {
+					piece = 0;
+				}
 			}
 		}
 
