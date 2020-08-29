@@ -106,9 +106,6 @@ function get_img_puzzle(settings) {
 	let img = new Image();
 	let check_playable = false;
 
-	document.querySelector(div_holder).style.position = "relative";
-	document.querySelector(div_holder).style.overflow = "hidden";
-
 	// checking if there is any problem with the image load
 	img.onerror = img_load_failed;
 	function img_load_failed() {
@@ -174,6 +171,7 @@ function get_img_puzzle(settings) {
 		gameHolder.classList.add("_game_output");
 		document.querySelector(div_holder).appendChild(gameHolder);
 		game_holder = document.querySelector("._game_output");
+		game_holder.style.overflow = "hidden";
 		
 		// setting how many elemnt going to be created depends on the difficulty
 		let elem_piece = 0;
