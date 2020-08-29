@@ -4,6 +4,7 @@ Split pictures into pieces and shuffle them.
 After shuffle you can drag each piece and replace it with an other piece.
 If the user wins, the function can send back statistics of the game.
 It is working with mouse events and touch events as well.
+You can easily implement this to your site.
 
 [Demo Here](https://codepen.io/Balint_Gacsfalvy/pen/rNxYQog)
 
@@ -107,7 +108,7 @@ The **Results object** returns:
 
 **total_shuffle**: The number of the elements that has been swapped before the game.
 
-**played_difficulty**: The difficulty that the user played. Can be **normal** or **hard**.
+**played_difficulty**: The difficulty that the user played.
 
 [Demo Here](https://codepen.io/Balint_Gacsfalvy/pen/rNxYQog)
 
@@ -117,7 +118,6 @@ The **Results object** returns:
 ```javascript
 // here calling the function with a string
 // telling to make the image into the .PlayGround div
-// and setting a function to alert when the player wins
 
 get_img_puzzle(settings = {
 		image: "https://i.ibb.co/cTDp6mh/hatter6.jpg",
@@ -129,7 +129,6 @@ get_img_puzzle(settings = {
 ```javascript
 // the function will select one random path of the array
 // also setting the difficulty to hard
-// and setting a function to alert when the player wins
 // after the images loaded the function will wait only 1 second
 // then 10 shuffle runs
 
@@ -168,7 +167,7 @@ let images = [
 		let difficulty = results.played_difficulty;
 		
 		// output the personalized message
-		console.log("You win! You did it in "+moves+" moves and "+f_minutes+" minute(s) and "+f_seconds+" seconds. The difficulty was "+ difficulty);
+		alert("You win! You did it in "+moves+" moves and "+f_minutes+" minute(s) and "+f_seconds+" seconds. The difficulty was "+ difficulty);
 	}
 	
 	// setting up the puzzle
@@ -190,7 +189,7 @@ let images = [
 
 // this function will run when the image is loaded and the swapping has begun
 function started() {
-	console.log("Started to swap the elements");
+	alert("Started to swap the elements");
 }
 	
 // setting up the puzzle
@@ -218,11 +217,11 @@ let images = [
 function isShuffle(state) {
 	// argument arrived, the shuffle is finished
 	if(state === true) {
-		console.log("I'm done with the shuffle");
+		alert("I'm done with the shuffle");
 	}
 	// the function is runned without the argument so the shuffle begun but not finished
 	else {
-		console.log("I just started to swap the elements");
+		alert("I just started to swap the elements");
 	}
 }
 
@@ -245,7 +244,7 @@ let images = [
 	];
 	
 	// this function is waiting for the image's source
-	// by passing it to the get_img_puzzle will run this function and
+	// by passing it to the get_img_puzzle, it will run this function and
 	// when the image is loaded, this function will be called with the src parameter
 	function img_for_help(src) {
 		console.log(src);
