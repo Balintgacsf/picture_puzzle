@@ -195,9 +195,10 @@ function get_img_puzzle(settings) {
 		game_holder.style.overflow = "hidden";
 		
 		// Adding pieces to html
-		// and adding data attributes to them. The data-piece is always the same, but the data-sequence will be changed
+		// and adding data attribute to them, this will be useful when checking the win
 		for (let i = 0; i <= elem_piece; i++) {
-			game_holder.innerHTML += "<div data-piece='"+i+"' data-sequence="+i+" class='bg-elem'></div>\n";
+			let randseq = Math.floor(getRandom(0,elem_piece-1));
+			game_holder.innerHTML += "<div data-sequence="+randseq+" class='bg-elem'></div>\n";
 		}
 
 		game_holder.style.position = "absolute";
@@ -336,11 +337,11 @@ function get_img_puzzle(settings) {
 				}
 
 				// checking all the elements, if our finger or mouse is on them
-				let data_actual_piece = parseInt(event.target.getAttribute('data-piece'));
 				for(let i = 0; i < all_elem.length; i++) {
 					// we have to make sure that our element is not the one we dragging
-					if(i === data_actual_piece) {
-						if(data_actual_piece !== all_elem.length-1) {
+					if(all_elem[i] === event.target) {
+						// if the current element is not the last one, move to the next element
+						if(i !== all_elem.length-1) {
 							continue;
 						}
 					}
@@ -399,8 +400,8 @@ function get_img_puzzle(settings) {
 			for (let i = 0; i < element.length; i++) {
 			let data_sequence = element[i].getAttribute('data-sequence');
 			sequence = sequence + data_sequence;
-				if(i == element.length-1) {
-					if (sequence == original_sequence) {
+				if(i === element.length-1) {
+					if (sequence === original_sequence) {
 						check_playable = false;
 						win();
 					} else {
