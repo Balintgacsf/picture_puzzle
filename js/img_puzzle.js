@@ -293,7 +293,6 @@ function get_img_puzzle(settings) {
 
 			// MOUSEDOWN AND TOUCHSTART
 			if(event.type === "mousedown" || event.type === "touchstart") {
-				event.target.addEventListener('mouseleave', event_function);
 				
 				// turning off transition until drag
 				for(let i = 0; i < all_elem.length; i++) {
@@ -362,16 +361,6 @@ function get_img_puzzle(settings) {
 				event.target.style.zIndex = "1";
 
 				check_for_playeable();
-			}
-			
-			// MOUSELEAVE
-			if(event.type === "mouseleave") {
-				// if the mouse leaves the element, drop the element back to its original position
-				event.target.removeEventListener('mouseleave', event_function);
-				event.target.style.top = original_pos[0]+'px';
-				event.target.style.left  = original_pos[1]+'px';
-				original_pos = [];
-				return;
 			}
 
 		}
@@ -588,12 +577,11 @@ function get_img_puzzle(settings) {
 				firstY = e.pageY;
 				
 				this.addEventListener('mousemove', dragIt);
-				this.addEventListener('mouseleave', function() {
-					this.removeEventListener('mousemove', dragIt);
-				});
+				this.addEventListener('mouseleave', dragIt);
 				
 				game_holder.addEventListener('mouseup', function() {
 					drg_elem[i].removeEventListener('mousemove', dragIt);
+					drg_elem[i].removeEventListener('mouseleave', dragIt);
 				});
 			
 			});
