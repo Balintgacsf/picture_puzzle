@@ -408,7 +408,7 @@ function get_img_puzzle(settings) {
 			// counting minutes and seconds together
 			let seconds_left = total_time/1000 % 60;
 			let time_format = {
-				minutes: Math.round(total_time/1000/60),
+				minutes: Math.floor(total_time/1000/60),
 				seconds: Math.floor(seconds_left)
 			};
 			// setting the result object
