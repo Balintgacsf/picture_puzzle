@@ -1,25 +1,27 @@
-function get_img_puzzle(settings) {
+function img_pzl(options) {
 
-	// accepting settings
+	// accepting options
 	try{
-		if(typeof settings !== "object") throw "An object must be passed to the function! Now it is: "+ typeof settings;
+		if(typeof options !== "object") throw "An object must be passed to the function! Now it is: "+ typeof options;
 	}
 	catch(err) {
-		console.error("get_img_puzzle : "+err);
+		console.error("img_pzl : "+err);
 		return;
 	}
 
-	let images = settings.image;
-	let div_holder = settings.holder_div;
-	let win_function = settings.after_win;
-	let difficulty = settings.difficulty || "normal";
-	let shuffle_delay = settings.shuffle_delay || 3000;
-	let shuffle_int = settings.shuffle_integer || 50;
-	let box_shadow = settings.elem_shadow;
-	let on_shuffle = settings.on_shuffle || false;
-	let until_shuffle = settings.until_shuffle || false;
-	let is_shuffle_animation = settings.is_shuffle_animation || false;
-	let get_img = settings.get_img;
+	// options
+	let images = options.image;
+	let div_holder = options.holder;
+	let difficulty = options.difficulty || "normal";
+	let shuffle_delay = options.delay || 3000;
+	let shuffle_int = options.shuffle || 50;
+	let box_shadow = options.shadow;
+	let is_shuffle_animation = options.animation || false;
+
+	// events
+	let on_shuffle = img_pzl.onShuffle;
+	let on_shuffle_end = img_pzl.onShuffleEnd;
+	let win_function = img_pzl.gameOver;
 
 
 	// error messages
@@ -28,22 +30,22 @@ function get_img_puzzle(settings) {
 			throw "images expecting to be a string or an array, "+typeof images+" given";
 
 		if(typeof div_holder !== "string")
-			throw "div_holder expecting to be a string, "+typeof div_holder+" given";
+			throw "holder expecting to be a string, "+typeof div_holder+" given";
 		
 		if(!document.querySelector(div_holder))
-			throw "div_holder ( "+div_holder+" ) cannot be found.";
+			throw "holder ( \" "+div_holder+" \" ) cannot be found";
 
 		if(typeof win_function !== "function" && typeof win_function !== "undefined")
-			throw "after_win expecting to be a function, "+typeof win_function+" given";
+			throw "img_pzl.gameOver expecting to be a function, "+typeof win_function+" given";
 
 		if(typeof shuffle_delay !== "number")
-			throw "shuffle_delay expecting to be a number, "+typeof shuffle_delay+" given";
+			throw "delay expecting to be a number, "+typeof shuffle_delay+" given";
 
 		if(typeof shuffle_int !== "number")
-			throw "shuffle_integer expecting to be a number, "+typeof shuffle_int+" given";
+			throw "shuffle expecting to be a number, "+typeof shuffle_int+" given";
 
-		if(typeof box_shadow !== "boolean" && typeof box_shadow !== "undefined")
-			throw "elem_shadow expecting to be a boolean, "+typeof box_shadow+" given";
+		if(typeof box_shadow !== "string" && typeof box_shadow !== "undefined")
+			throw "shadow expecting to be a string, "+typeof box_shadow+" given";
 
 		if(typeof difficulty !== "string")
 			throw "difficulty expecting to be a string, "+typeof difficulty+" given";
@@ -51,44 +53,38 @@ function get_img_puzzle(settings) {
 		if(difficulty !== "easy" && difficulty !== "normal" && difficulty !== "hard" && difficulty !== "nightmare")
 			throw "difficulty can be easy, normal, hard or nightmare";
 
-		if(on_shuffle !== "function" && on_shuffle === "boolean")
-			throw "on_shuffle expecting to be a function, "+ typeof on_shuffle+ " given";
-
-		if(until_shuffle !== "function" && until_shuffle === "boolean")
-			throw "until_shuffle expecting to be a function, "+ typeof until_shuffle+ " given";
+		if(typeof on_shuffle !== "function" && typeof on_shuffle !== "undefined")
+			throw "onShuffle expecting to be a function, "+ typeof on_shuffle+ " given";
+		
+		if(typeof on_shuffle_end !== "function" && typeof on_shuffle_end !== "undefined")
+			throw "onShuffleEnd expecting to be a function, "+ typeof on_shuffle_end+ " given";
 
 		if(typeof is_shuffle_animation !== "boolean")
-			throw "is_shuffle_animation expecting to be a boolean, "+typeof is_shuffle_animation+" given";
-
-		if(typeof get_img !== "function" && typeof get_img !== "undefined")
-			throw "get_img expecting to be a function, "+typeof get_img+" given";
+			throw "animation expecting to be a boolean, "+typeof is_shuffle_animation+" given";
 
 		// checking if the main holder div's height and width has been set
 		if(document.querySelector(div_holder).offsetHeight == 0 || document.querySelector(div_holder).offsetWidth == 0)
 			throw "The main holder's ( "+div_holder+" ) width or height has been set to 0. It cannot be seen.";
 	}
 	catch(err) {
-		console.error("get_img_puzzle : "+err);
+		console.error("img_pzl : "+err+ "!");
 		return;
 	}
 
-	// creating win_function (make sure that the user wont use this name)
-	function __$won__(results) {
-		let moves = results.moves;
-		let f_minutes = results.time_formatted.minutes;
-		let f_seconds = results.time_formatted.seconds;
-		let difficulty = results.played_difficulty;
-		alert("You win! You did it in "+moves+" moves and "+f_minutes+" minute(s) and "+f_seconds+" seconds. The difficulty was "+ difficulty);
-	}
-
 	// adding default value to win_function
-	if(typeof win_function === "undefined") {
-		win_function = __$won__;
+	if(typeof img_pzl.gameOver === "undefined") {
+		img_pzl.gameOver = function() {
+			let moves = img_pzl.gameOver.results.moves;
+			let f_minutes = img_pzl.gameOver.results.time_formatted.minutes;
+			let f_seconds = img_pzl.gameOver.results.time_formatted.seconds;
+			let difficulty = img_pzl.gameOver.results.played_difficulty;
+			alert("You win! You did it in "+moves+" moves and "+f_minutes+" minute(s) and "+f_seconds+" seconds. The difficulty was "+ difficulty);
+		};
 	}
 
 	// setting box_shadow to true if undefined
 	if(typeof box_shadow === "undefined") {
-		box_shadow = true;
+		box_shadow = false;
 	}
 
 	// variables which are will be passed to the win_function
@@ -109,7 +105,7 @@ function get_img_puzzle(settings) {
 	// checking if there is any problem with the image load
 	img.onerror = img_load_failed;
 	function img_load_failed() {
-		console.error("get_img_puzzle : Image could not be loaded");
+		console.error("img_pzl : Image could not be loaded");
 		return;
 	}
 
@@ -117,10 +113,9 @@ function get_img_puzzle(settings) {
 
 	img.onload = function() {
 
-		// if the image has loaded and if needed give back image's src to the get_img function
-		if(get_img) {
-			get_img(img.src);
-		}
+		// when the image is loaded, save the image's src to a propertie
+		img_pzl.img = img.src;
+
 		let original_sequence = "", sequence = "";
 		let imgwidth = img.width;
 		let imgheight = img.height;
@@ -180,12 +175,12 @@ function get_img_puzzle(settings) {
 		}
 
 		// if the puzzle was made in the same div as before, clear alredy running timeouts
-		if(get_img_puzzle.holder === div_holder) {
-			clearTimeout(get_img_puzzle.wait);
+		if(img_pzl.holder === div_holder) {
+			clearTimeout(img_pzl.wait);
 		}
 
 		// update the holder div
-		get_img_puzzle.holder = div_holder;
+		img_pzl.holder = div_holder;
 
 		// creating game holder div
 		let gameHolder = document.createElement("DIV");
@@ -392,7 +387,7 @@ function get_img_puzzle(settings) {
 				if(i === element.length-1) {
 					if (sequence === original_sequence) {
 						check_playable = false;
-						win();
+						img_pzl.state(true);
 					} else {
 						sequence = "";
 					}
@@ -401,15 +396,17 @@ function get_img_puzzle(settings) {
 		}
 		
 		// WIN_FUNCTION
-		function win() {
+		img_pzl.state = function(win = false) {
+			if(!time) {
+				return false;
+			}
 			// counting the played time
 			fin_time = new Date();
-			let total_time = fin_time - time;
 			// counting minutes and seconds together
-			let seconds_left = total_time/1000 % 60;
+			let total_time = fin_time - time;
 			let time_format = {
 				minutes: Math.floor(total_time/1000/60),
-				seconds: Math.floor(seconds_left)
+				seconds: Math.floor(total_time/1000 % 60)
 			};
 			// setting the result object
 			let results = {
@@ -429,13 +426,35 @@ function get_img_puzzle(settings) {
 				played_difficulty: difficulty
 			};
 
-			// passing the results and the element array
-			win_function(results, element);
+			if(win === true) {
+				// passing the results and the element array
+				img_pzl.gameOver.results = results;
+				img_pzl.gameOver();
+				time = false;
 
-			// removing the box-shadow of all elements
-			if(box_shadow === true) {
-				for(let i = 0; i < element.length; i++ ) {
-					element[i].style.boxShadow = "inset 0px 0px 0px #ccc";
+				// removing the box-shadow of all elements
+				if(box_shadow) {
+					for(let i = 0; i < element.length; i++ ) {
+						element[i].style.boxShadow = "inset 0px 0px 0px #ccc";
+					}
+				}
+			} else {
+				return results;
+			}
+		}
+
+		// if box-shadow is set, then apply it on all element
+		// the default box-shadow is : "inset 1px 1px 3px #ccc"
+		function get_shadow(box_shadow) {
+			if(box_shadow) {
+				if(box_shadow === "default") {
+					for(let i = 0; i < element.length; i++) {
+						element[i].style.boxShadow = "inset 1px 1px 3px #ccc";
+					}
+				} else {
+					for(let i = 0; i < element.length; i++) {
+						element[i].style.boxShadow = box_shadow;
+					}
 				}
 			}
 		}
@@ -444,10 +463,7 @@ function get_img_puzzle(settings) {
 		function shuffle() {
 			// shuffle begined
 			if(on_shuffle) {
-				on_shuffle();
-			}
-			if(until_shuffle) {
-				until_shuffle();
+				img_pzl.onShuffle();
 			}
 			let random_elem = document.querySelectorAll(div_holder+" ._game_output .bg-elem");
 			for(let i = 0; i < shuffle_int; i++) {
@@ -462,12 +478,11 @@ function get_img_puzzle(settings) {
 						animate_shuffle();
 					} else {
 						check_playable = true;
-						if(box_shadow === true) {
-							for(let i = 0; i < element.length; i++) {
-								element[i].style.boxShadow = "inset 1px 1px 3px #ccc";
-							}
-						}
+						get_shadow(box_shadow);
 						draggable_elements(element); // Enabling draggable
+						if(on_shuffle_end) {
+							img_pzl.onShuffleEnd();
+						}
 					}
 				}
 			}
@@ -503,7 +518,7 @@ function get_img_puzzle(settings) {
 					element[i].style.transition = "all 0.3s";
 				}
 
-				// dropping elements back to new positions
+				// dropping elements to new positions
 				for(let i = 0; i < element.length; i++) {
 					setTimeout(function() {
 						element[i].style.top = elemTopPositions[i]+'px';
@@ -512,14 +527,12 @@ function get_img_puzzle(settings) {
 					if(i === element.length-1) {
 						setTimeout(function() {
 							check_playable = true;
-							if(box_shadow === true) {
-								for(let i = 0; i < element.length; i++) {
-									element[i].style.boxShadow = "inset 1px 1px 3px #ccc";
-								}
-							}
+							get_shadow(box_shadow);
 							draggable_elements(element); // Enabling draggable
-							if(until_shuffle) {
-								until_shuffle(true);
+							if(on_shuffle_end) {
+								setTimeout(function() {
+									img_pzl.onShuffleEnd();
+								}, 301);
 							}
 						},1+i*100);
 					}
@@ -530,7 +543,7 @@ function get_img_puzzle(settings) {
 		
 		// waiting for shuffle
 		// adding setTimeout to the function
-		get_img_puzzle.wait = setTimeout(shuffle, shuffle_delay);
+		img_pzl.wait = setTimeout(shuffle, shuffle_delay);
 
 		function check_for_playeable() {
 			if(check_playable === false) {
