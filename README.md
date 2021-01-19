@@ -17,98 +17,95 @@ Add the js file into the head section:
     <!--<script src="js/img_puzzle.js"></script>-->
 </head>
 ```
-In the body just add one div with class you choose. In this example we are gonna use ```PlayGround```.
+In the body create one div where the game will be created.
 ```html
 <div class="PlayGround"></div>
 ```
 ### Javascript
 
-You have to pass the ```settings``` object to the function with the image(s), the main holder div's selector where the game will be placed.
-If you want, you can create an array with the paths of the images what you want to shuffle and pass it to the function. The function will select random image from the array each time you call the function.
+You have to pass the ```options``` object to the function with the image(s) and the main holder div's selector where the game will be placed.
+If you want, you can pass an array with the paths of the images what you want to shuffle. The function will select random image from the array each time you call the function.
 
 ```javascript
 let images = [
     "https://path/to/image7.jpg",
     "https://path/to/image5.jpg",
     "https://path/to/image4.jpg",
-    "https://path/to/image3.jpg",
+    "https://path/to/image3.jpg"
 ];
 	
-get_img_puzzle(settings = {
-		image: images,
-		holder_div: ".PlayGround"
-		});
+img_pzl(options = {
+	image: images,
+	holder: ".PlayGround"
+});
 ```
+## Options
+Here is the list for all the useable options:
+- image: ```{string|Array}``` Contains the path of image(s).
+- holder: ```{string}``` Contains the selector to where to put the game.
+- difficulty: ```{string}``` Can be : ```default: medium```
+  - **easy**: columns: 5, rows: 2
+  - ***medium***: columns: 7, rows: 2
+  - **hard**: columns: 7, rows: 3
+  - **nightmare**: columns: 8, rows: 4
+- delay: ```{number}``` Milliseconds to wait to start shuffle after the image is loaded. ```default: 3000```
+- shuffle: ```{number}``` The number that tells how many times do shuffle the pieces. ```default: 1```
+- transition: ```{number}``` CSS ```transition``` number in ***milliseconds***. ```default: 300```
+- shadow: ```{string}``` CSS ```box-shadow```. When the game is ready to play, box-shadow will appear on each element. ```default: "inset 1px 1px 3px #ccc"```
+- hintSwap: ```{boolean}``` Swap two elements or not when hint. If false, ```.hint``` will only return the two elements index but not swapping them. ```default: true```
 
-The ``` get_img_puzzle() ``` function is waiting for two arguments in the settings object. The other eight is optional: 
-```javascript
-// here are listed the parameters and the default values of the settings
-get_img_puzzlesettings = {
-		image: images, // needed
-		holder_div: ".PlayGround", // needed
-		after_win: won, // optional
-		difficulty: "normal", // optional
-		shuffle_delay: 3000, // optional
-		shuffle_integer: 50, // optional
-		elem_shadow: true, // optional
-		on_shuffle: false, // optional
-		until_shuffle: false, // optional
-		is_shuffle_animation: false // optional
-		}); 
-```
+## Events
 
-**image**: ```string || array``` the string or array which are contains the images sources.
+### *.onShuffle*
 
-**holder_div**: ``` string ``` the selector of the main holder div where the image will be displayed.
+Function that will run when the shuffle has begun.
 
-**after_win**: ``` function ``` the function which will run when the player wins. Remember to **not** to invoke the function so do not put the ```()```. The default function will alert the user, with the statics of the play.
+### *.onShuffleEnd*
 
-**difficulty**: ``` string ``` the difficulty of the game. Can be **easy** which means 5 pieces in 2 rows or **normal** which means 14 pieces in 2 rows or **hard** which means 21 pieces in 3 rows or **nightmare** wich means 32 pices in 4 rows.
+Function that will run when the shuffle has ended.
 
-**get_img**: ``` function ``` the function which will get it's parameter the current image source. It is useful if the images was passed in by an array, and the function randomly chosen one image.
+### *.gameOver*
 
-**shuffle_delay**: ``` number ``` The time in miliseconds to wait before shuffleing the image. (3000 by Default).
+This function will fire when the puzzle was solved.
+You can get all the game statistics from the ```.results``` property which contains:
+- moves: All moves that the user did. In other words the number when two elements has been swapped.
 
-**shuffle_integer**: ``` number ``` Every shuffle swaps two elements positions. You can set how many shuffle you want. (50 by Default)
+- cancelled_moves: All moves that did not end in a swap, the user changed his or her mind.
 
-**elem_shadow**: ``` boolean ``` Control the box-shadow on all element (```inset 1px 1px 3px #ccc```). True by default.
+- time_ms: The time in milliseconds that the user played.
 
-**on_shuffle**: ``` function ``` the function which will run when the image is loaded and the shuffle function started to swap the elements.
+- time_s: The time in seconds that the user played.
 
-**until_shuffle**: ``` function ``` the function which will run two times:
+- time_m: The time in minutes that the user played.
 
-- First time when the image is loaded and the shuffle function started to swap the elements.
-- Second time when the shuffle is done (including animations), but this time your function will get an argument (a ```true```)
-[See the examples](https://github.com/Balintgacsf/picture_puzzle#examples)
-
-**is_shuffle_animation**: ```boolean``` You can activate an animation for the mixing (false by default):
-
-![Gif](https://i.ibb.co/YcpPPXV/demo-gif.gif)
-
-
-### After win
-
-After the game finished, so when the user solved the puzzle, the function can send you statics of the play. Like moves, time etc..
-It gives your function (what you passed in the ```after_win```) one object called **results** and an array of the function created elements.
-
-The **Results object** returns:
-
-**moves**: All moves that the user did. In other words the number when two elements has been swapped.
-
-**cancelled_moves**: All moves that then did not end in a swap, so the user changed his or her mind.
-
-**time_ms**: The time in milliseconds that the user played.
-
-**time_s**: The time in seconds that the user played.
-
-**time_m**: The time in minutes that the user played.
-
-**time_formatted**: It is an object. It contains **minutes** and the rest of the **seconds**. So you can output like: ``` you did it in 1 minute and 25 seconds.```
+- time_formatted: It is an object. It contains **minutes** and the rest of the **seconds**. So you can output like: ``` you did it in 1 minute and 25 seconds.```
 [See more](https://github.com/Balintgacsf/picture_puzzle#examples) about that in the examples section below.
 
-**total_shuffle**: The number of the elements that has been swapped before the game.
+- total_shuffle: The number of shuffle that has been done.
 
-**played_difficulty**: The difficulty that the user played.
+- played_difficulty: The difficulty that the user played.
+
+### *.state*
+
+Returns the current state of the game. Use it like the ```.gameOver``` function, they have the same property. When the game has ended the ```.state``` function will return false. The ```.results``` object will be only accessable in the ```.gameOver``` function.
+
+### *.hint*
+
+Finds two elements which are not on their original position and swap them if ```hintSwap``` is true. Otherwise it will return the two elements indexes.
+
+### *.mark*
+
+Returns all elements index which are on their original positions.
+
+## Get Informations
+
+### *.img*
+
+Get the current image src.
+
+### *.elements*
+
+Returns a node list of all element inside the game.
 
 [Demo Here](https://codepen.io/Balint_Gacsfalvy/pen/rNxYQog)
 
@@ -119,142 +116,71 @@ The **Results object** returns:
 // here calling the function with a string
 // telling to make the image into the .PlayGround div
 
-get_img_puzzle(settings = {
-		image: "https://i.ibb.co/cTDp6mh/hatter6.jpg",
-		holder_div: ".PlayGround"
-	});
+img_pzl({
+	image: "https://i.ibb.co/cTDp6mh/hatter6.jpg",
+	holder: ".PlayGround"
+});
 ```
 
 **Calling the function with an array of image sources**
 ```javascript
 // the function will select one random path of the array
-// also setting the difficulty to hard
-// after the images loaded the function will wait only 1 second
-// then 10 shuffle runs
 
 let images = [
     "https://path/to/image7.jpg",
     "https://path/to/image5.jpg",
     "https://path/to/image4.jpg",
-    "https://path/to/image3.jpg",
+    "https://path/to/image3.jpg"
 ];
 	
-get_img_puzzle(settings = {
-		image: images,
-		holder_div: ".PlayGround",
-		difficulty: "hard",
-		shuffle_delay: 1000,
-		shuffle_integer: 10
-		});
+img_pzl({
+	image: images,
+	holder: ".PlayGround"
+});
 ```
 **Working with statics of the play when the user wins**
 ```javascript
 // array of image sources
 let images = [
-	"https://i.ibb.co/VBNcJBr/hatter7.jpg",
-	"https://i.ibb.co/dL0rjZb/hatter5.jpg",
-	"https://i.ibb.co/1MkR9LN/hatter4.jpg",
-	"https://i.ibb.co/mhhKxP5/hatter3.jpg"
-	];
+    "https://path/to/image7.jpg",
+    "https://path/to/image5.jpg",
+    "https://path/to/image4.jpg",
+    "https://path/to/image3.jpg"
+];
+
+img_pzl.gameOver = function() {
+	let moves = img_pzl.gameOver.results.moves; // all moves with hint included
+	let f_minutes = img_pzl.gameOver.results.time_formatted.minutes; // formatted minutes
+	let f_seconds = img_pzl.gameOver.results.time_formatted.seconds; // fromatted seconds
+	let difficulty = img_pzl.gameOver.results.played_difficulty; // played difficulty
 	
-	// passing this function to run when the player wins
-	// note that the function is waiting for the argument: results
-	function won(results) {
-		let moves = results.moves;
-		// the time_formatted is an object and it has two values: minutes and the rest of the seconds
-		let f_minutes = results.time_formatted.minutes;
-		let f_seconds = results.time_formatted.seconds;
-		let difficulty = results.played_difficulty;
-		
-		// output the personalized message
-		alert("You win! You did it in "+moves+" moves and "+f_minutes+" minute(s) and "+f_seconds+" seconds. The difficulty was "+ difficulty);
-	}
+	alert("You win! You did it in "+moves+" moves and "+f_minutes+" minute(s) and "+f_seconds+" seconds. The difficulty was "+ difficulty);
+};
 	
-	// setting up the puzzle
-	get_img_puzzle({
-		image: images,
-		holder_div: ".PlayGround",
-		after_win: won
-	});
+// setting up the puzzle
+img_pzl({
+	image: images,
+	holder: ".PlayGround"
+});
 ```
 	
 **Get notify when the game started to shuffle**
 ```javascript
 let images = [
-	"https://i.ibb.co/VBNcJBr/hatter7.jpg",
-	"https://i.ibb.co/dL0rjZb/hatter5.jpg",
-	"https://i.ibb.co/1MkR9LN/hatter4.jpg",
-	"https://i.ibb.co/mhhKxP5/hatter3.jpg"
-	];
+	"https://path/to/image7.jpg",
+	"https://path/to/image5.jpg",
+	"https://path/to/image4.jpg",
+	"https://path/to/image3.jpg"
+];
 
 // this function will run when the image is loaded and the swapping has begun
-function started() {
-	alert("Started to swap the elements");
+img_pzl.onShuffle = function() {
+	alert("Shuffle have just begun!");
 }
 	
 // setting up the puzzle
-// passing the function to get_img_puzzle
-	get_img_puzzle({
-		image: images,
-		holder_div: ".PlayGround",
-		on_shuffle: started
-	});
-```
-
-**Get notify when the game started to shuffle and also get notify when the game finished the shuffle**
-```javascript
-let images = [
-	"https://i.ibb.co/VBNcJBr/hatter7.jpg",
-	"https://i.ibb.co/dL0rjZb/hatter5.jpg",
-	"https://i.ibb.co/1MkR9LN/hatter4.jpg",
-	"https://i.ibb.co/mhhKxP5/hatter3.jpg"
-	];
-
-// this function will be passed to the until_shuffle
-// the function will run two times:
-// first when the image is loaded and the shuffle function started to swap the elements
-// second time when the shuffle function is finished, but this time your function will get an argument
-function isShuffle(state) {
-	// argument arrived, the shuffle is finished
-	if(state === true) {
-		alert("I'm done with the shuffle");
-	}
-	// the function is runned without the argument so the shuffle begun but not finished
-	else {
-		alert("I just started to swap the elements");
-	}
-}
-
-// setting up the puzzle
-// passing the function to get_img_puzzle
-	get_img_puzzle({
-		image: images,
-		holder_div: ".PlayGround",
-		until_shuffle: isShuffle
-	});
-```
-**Get the image's source when you called the function with an array of image sources**
-```javascript
-// array of images
-let images = [
-	"https://i.ibb.co/VBNcJBr/hatter7.jpg",
-	"https://i.ibb.co/dL0rjZb/hatter5.jpg",
-	"https://i.ibb.co/1MkR9LN/hatter4.jpg",
-	"https://i.ibb.co/mhhKxP5/hatter3.jpg"
-	];
-	
-	// this function is waiting for the image's source
-	// by passing it to the get_img_puzzle, it will run this function and
-	// when the image is loaded, this function will be called with the src parameter
-	function img_for_help(src) {
-		console.log(src);
-	}
-	
-	// calling the get_img_puzzle and telling that we will need the current image's source
-	// so we pass our function to the get_img key
-	get_img_puzzle({
-		image: images,
-		holder_div: ".PlayGround",
-		get_img: img_for_help
-	});
+img_pzl({
+	image: images,
+	holder: ".PlayGround"
+});
 ```
