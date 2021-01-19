@@ -157,9 +157,6 @@ function img_pzl(options) {
 	// the image is ready, we can start working
 	img.onload = function() {
 
-		// when the image is loaded, save the image's src to a propertie
-		img_pzl.img = img.src;
-
 		// image width and height
 		let imgwidth = img.width, imgheight = img.height;
 
@@ -634,10 +631,12 @@ function img_pzl(options) {
 	if(Array.isArray(images)) {
 		let random_img = Math.floor(getRandom(0,images.length-1));
 		img.src = images[random_img];
+		img_pzl.img = img.src; // the current image is now accessible from outside
 	}
 	// String
 	if(typeof images === "string") {
 		img.src = images;
+		img_pzl.img = img.src; // the current image is now accessible from outside
 	}
 
 	function getRandom(min, max) {
